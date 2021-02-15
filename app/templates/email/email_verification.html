@@ -1,0 +1,5 @@
+<p>Someone (hopefully you) register on flask news. Please verify your account:</p>
+
+<a href="{{ url_for('auth.verify_account', token=token, _external=True) }}">Verify account</a>.
+
+<p>If not, just ignore this message.</p>
