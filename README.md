@@ -39,6 +39,11 @@ It uses:
 ```bash
 $ git clone https://github.com/gixita/pulsarnews
 ```
+- for server installation 
+```bash
+$ 
+```
+
 
 - create a virtual environment with the latest python version
 - install requirements
