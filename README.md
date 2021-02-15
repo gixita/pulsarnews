@@ -1,16 +1,9 @@
 <div align="left">
-<h1>flask_hackernews</h1>
-<a href="https://www.python.org/downloads/release/python-371/">
-<img src="https://img.shields.io/badge/python-3.7.1-blue.svg"/></a>
-</br>
+<h1>PulsarNews</h1>
 </div>
 <br>
 
-[**flask_hackernews**](https://hackernews.duarteocarmo.com/) is a minimalistic hackernews clone. 
-
-Built so that beginners who want a hackernews-like application can quickly get to work. 
-
-Greatly inspired by the awesome [flask megatutorial](https://blog.miguelgrinberg.com/post/the-flask-mega-tutorial-part-i-hello-world), one of the best ressources to learn more about flask.
+Fork from [**flask_hackernews**](https://hackernews.duarteocarmo.com/) is a minimalistic hackernews clone. 
 
 It uses: 
 
@@ -44,7 +37,7 @@ It uses:
 - clone this repo
 
 ```bash
-$ git clone https://github.com/duarteocarmo/flask_hackernews
+$ git clone https://github.com/gixita/pulsarnews
 ```
 
 - create a virtual environment with the latest python version
@@ -73,6 +66,7 @@ MAIL_PASSWORD = <admin_email_password>
 
 ```bash
 (venv) $ flask db init
+(venv) $ flask db migrate -m "first init"
 (venv) $ flask db upgrade
 ```
 
@@ -94,5 +88,3 @@ MAIL_PASSWORD = <admin_email_password>
 
 
 ### About
-
-This project was built by duarteocarmo. If you have any questions, [contact me](https://duarteocarmo.com)!
