@@ -1,0 +1,9 @@
+.flaskenv
+app.db
+.vscode
+logs
+.env
+migrations
+__pycache__
+venv
+app.__pycache__

@@ -1,0 +1,20 @@
+{% extends "core.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+        <div class="text-center">
+            <a href="{{ url_for('main.index') }}">
+                <img
+                class="mb-4"
+                src="{{ url_for('static', filename='pulsarnews.png')}}"
+                style="width: 250px;"
+                />
+            </a>
+            <h1>An unexpected error has occurred</h1>
+            <p>Sorry for the inconvenience!</p>
+            <p><a href="{{ url_for('main.index') }}">Home</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

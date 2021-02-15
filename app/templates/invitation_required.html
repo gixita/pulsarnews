@@ -1,0 +1,22 @@
+{% extends "core.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+        <div class="text-center">
+            <a href="{{ url_for('main.index') }}">
+                <img
+                class="mb-4"
+                src="{{ url_for('static', filename='pulsarnews.png')}}"
+                style="width: 250px;"
+                />
+            </a>
+            <h1 class="text-center">On invitation only</h1>
+            <div class="text-center">
+                Sorry the administrator of your company says that you can connect only on invitation. Please contact the admin of your company.
+            </div>
+        </div>
+    </div>
+</div>
+    {% endblock %}
+    

@@ -1,0 +1,51 @@
+{% extends "core.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
+        <div class="text-center">
+            <a href="{{ url_for('main.index') }}">
+                <img
+                class="mb-4"
+                src="{{ url_for('static', filename='pulsarnews.png')}}"
+                style="width: 250px;"
+                />
+            </a>
+            <h1>Register new user</h1>
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.username.label }}<br>
+                    {{ form.username(class="form-control form-control-lg", size=32, placeholder="Username") }}<br>
+                    {% for error in form.username.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.email.label }}<br>
+                    {{ form.email(class="form-control form-control-lg", size=32, placeholder="Email") }}<br>
+                    {% for error in form.email.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.password.label }}<br>
+                    {{ form.password(class="form-control form-control-lg", size=32, placeholder="Password") }}<br>
+                    {% for error in form.password.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.password2.label }}<br>
+                    {{ form.password2(class="form-control form-control-lg", size=32, placeholder="Retype password") }}<br>
+                    {% for error in form.password2.errors %}
+                    <span style="color: red;">[{{ error }}]</span>
+                    {% endfor %}
+                </p>
+                <button class="btn btn-primary btn-lg" type="submit">Register</button>
+            </form>
+            
+        </div>
+    </div>
+</div>
+{% endblock %}

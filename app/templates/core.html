@@ -1,0 +1,36 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+  {{ moment.include_jquery() }}
+  {{ moment.include_moment() }}
+  {{ moment.lang("en") }}
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css')}}">
+  {% if title %}
+  <title>{{ title }} - PulsarNews</title>
+  {% else %}
+  <title>PulsarNews</title>
+  {% endif %}
+</head>
+<body class="body-grey">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+  {% endif %}
+  {% endwith %}
+  <main class="px-3" role="main">
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+</body>
+</html>
+
+

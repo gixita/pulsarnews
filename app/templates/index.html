@@ -1,0 +1,11 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+  <h1 class="content-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted">{{ title }}</h1>
+</div>
+<ol class="ol-no-margin" start="{{ start_rank_num }}">
+  {% for post in posts %} {% include '_post.html' %} {% endfor %}
+</ol>
+{% if next_url %} <a href="{{ next_url }}"> More</a> {% endif %} 
+
+{% endblock %}

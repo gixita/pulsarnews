@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block content %} 
+
+{% include '_post.html' %} 
+
+{% if not post.url %}
+<div class="row margin-row">
+  <div class="mt-3">
+    <ul class="list list-inline">
+      <li class="d-flex justify-content-between">
+        <div class="d-flex flex-row align-items-center">
+          <div class="ml-2">
+            <span class="post-title">{{ post.text }}</span>
+          </div>
+        </li> 
+      </ul>
+    </div>
+  </div>
+  
+{% endif %}
+<br />
+
+<form action="" method="post">
+  {{ form.hidden_tag() }}
+  <p>
+    {{ form.text.label }}<br />
+    {{ form.text(cols=50, rows=4) }}<br />
+    {% for error in form.text.errors %}
+    <span style="color: red;">[{{ error }}]</span> {% endfor %}
+  </p>
+  <p>{{ form.submit() }}</p>
+</form>
+
+<br />
+
+{% for comment in comments %} {% include '_comment.html' %} {% endfor %} {%
+endblock %}

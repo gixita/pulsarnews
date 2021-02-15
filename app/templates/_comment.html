@@ -1,0 +1,29 @@
+<table>
+    <tbody>
+        <tr>
+        <td width="{{ comment.level() * 40}}" height="1"></td>
+        <td valign="top">
+            <center>
+                <a href="{{url_for('main.upvote_comment', comment_id=comment.id)}}"> <div>Vote</div> </a>
+            <a href=""> <div> </div> </a>
+            </center>
+        </td>
+        <td>
+            <div><span>{{ comment.author.username }}</span><span> {{ moment(comment.timestamp).fromNow() }}</span></div>
+            <div>
+                    
+                    {% filter markdown %}{{ comment.text }}{% endfilter %}
+                    
+            <div>
+                <p><a href="{{url_for('main.reply', comment_id=comment.id)}}"><u>Reply</u></a> - 
+                {%if current_user == comment.author %}
+                <a href="{{url_for('main.delete_comment', comment_id=comment.id)}}">Delete</a> - 
+                {% endif %}
+                Score: {{ comment.score }}</p>
+                
+            </div>
+            </div>
+        </td>
+        </tr>
+    </tbody>
+</table>
