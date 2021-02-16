@@ -1,5 +1,11 @@
-Someone (hopefully you) register on flask news. Please verify your account:
+PulsarNews.io
+
+
+Start using PulsarNews.io, just click the verify email link bellow
 
 {{ url_for('auth.verify_account', token=token, _external=True) }}
 
-If not, just ignore this message.
+If you are not the requester, just ignore this message.
+PulsarNews.io is a private tool for your company to share links and articles. Sharing is caring.
+
+PulsarNews.io - Mont-St-Guibert (Belgium)
