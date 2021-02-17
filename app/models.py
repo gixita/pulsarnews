@@ -251,10 +251,10 @@ class Post(db.Model):
                                               on_deserialize = None)]
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(80))
+    title = db.Column(db.String(140))
     url = db.Column(db.Text())
     url_base = db.Column(db.Text())
-    text = db.Column(db.String(280))
+    text = db.Column(db.String(500))
     timestamp = db.Column('timestamp', db.DateTime, index=True, default=datetime.utcnow())
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     score = db.Column(db.Integer, default=0)
@@ -379,7 +379,7 @@ class Comment(db.Model):
     _N = 6
 
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(140))
+    text = db.Column(db.String(500))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     path = db.Column(db.Text, index=True)

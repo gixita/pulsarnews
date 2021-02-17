@@ -1,6 +1,9 @@
 from flask import render_template, current_app
 import boto3
 
+# TODO manage hard bounces
+# https://aws.amazon.com/blogs/messaging-and-targeting/handling-bounces-and-complaints/
+
 def send_email(app, recipients, sender=None, subject='', text='', html=''):
     ses = boto3.client(
         'ses',

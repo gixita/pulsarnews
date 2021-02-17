@@ -91,7 +91,7 @@ def register():
     if form.validate_on_submit():
         checkUser = User.query.filter_by(email=form.email.data).first()
         user = User(username=form.username.data, email=form.email.data)
-        # Todo the verification of the domain to add the company_id should be done after the email has been verified
+        # TODO the verification of the domain to add the company_id should be done after the email has been verified
         query_domain = Domains.query.filter_by(name=form.email.data.split('@')[1]).first()
         mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
         if mail_provider:
