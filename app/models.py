@@ -15,6 +15,7 @@ class Company(db.Model):
     __tablename__ = 'company'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
+    banned = db.Column(db.Boolean, default=False)
     
     def __repr__(self):
         return f"<Post {self.name}>"
@@ -69,6 +70,8 @@ class User(UserMixin, db.Model):
     company_id = db.Column(db.Integer, db.ForeignKey("company.id"))
     admin = db.Column(db.Boolean, default=False)
     verified = db.Column(db.Boolean, default=False)
+    banned = db.Column(db.Boolean, default=False)
+    subscribe_newsletter = db.Column(db.Boolean, default=True)
     
 
     def get_reset_password_token(self, expires_in=600):
@@ -168,85 +171,47 @@ class RefreshToken(db.Model):
 class Post(db.Model):
     __tablename__ = 'post'
     __serialization__ = [AttributeConfiguration(name = 'id',
-                                              supports_csv = False,
-                                              csv_sequence = 1,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'title',
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'url',
-                                              supports_csv = False,
-                                              csv_sequence = 2,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'text',
-                                              supports_csv = False,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'deleted',
-                                              supports_csv = False,
-                                              csv_sequence = 3,
                                               supports_json = False,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'timestamp',
-                                              supports_csv = False,
-                                              csv_sequence = 3,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'score',
-                                              supports_csv = False,
-                                              csv_sequence = 3,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'descendants',
-                                              supports_csv = False,
-                                              csv_sequence = 3,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'username',
-                                              
                                               supports_json = True,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'kids',
-                                              supports_csv = False,
-                                              csv_sequence = 3,
                                               supports_json = True,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None),
                        AttributeConfiguration(name = 'deleted',
-                                              supports_csv = False,
-                                              csv_sequence = 3,
                                               supports_json = False,
-                                              supports_yaml = False,
-                                              supports_dict = False,
                                               on_serialize = None,
                                               on_deserialize = None)]
 
