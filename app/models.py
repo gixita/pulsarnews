@@ -262,10 +262,14 @@ class Post(db.Model):
 
     def update(self, gravity=1.8):
         datetime_difference = datetime.utcnow() - self.timestamp
+        if self.id == 34231:
+            print("datetime diff ", datetime_difference)
+            print("datetime diff days ", datetime_difference.days)
+            print("datetime diff seconds ", datetime_difference.seconds)
         hours_passed = (
-            datetime_difference.days * 24 + datetime_difference.seconds / 3600
+            datetime_difference.seconds / 60 
         )
-        self.pop_score = (self.score - 1) / pow((hours_passed + 2), gravity)
+        self.pop_score = ((self.score + 1) / pow((hours_passed + 2), gravity))
 
     def __repr__(self):
         return f"<Post {self.title}>"

@@ -396,3 +396,24 @@ import os
 #                 db.session.commit()
 #                 print(line.strip(), " - added")
 #     return redirect(url_for("main.index"))
+
+@bp.route("/load_new_data", methods=["GET"])
+def load_new_data():
+    csv_file_path = os.getcwd()+'/app/static/articles.csv'
+    with open(csv_file_path, 'r') as f:    
+        lines = f.readlines()
+        for line in lines:
+            post_exist = Post.query.filter_by(title=line.split(';')[0]).first()
+            if not post_exist:
+                post = Post(
+                    title=line.split(';')[0],
+                    url=line.split(';')[1],
+                    text='',
+                    author=current_user,
+                    company_id=current_user.company_id,
+                )
+                post.format_post(line.split(';')[1])
+                db.session.add(post)
+                db.session.commit()
+    return redirect(url_for("main.index"))
+

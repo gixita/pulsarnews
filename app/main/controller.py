@@ -24,10 +24,14 @@ class Controller:
 
 
     def index(current_page = 1):
-        # TODO optimize this rendering
-        for post in Post.query.filter_by(company_id=current_user.company_id, deleted=0).all():
+        posts_to_update = ( Post.query.filter_by(company_id=current_user.company_id, deleted=0)
+                            .order_by(Post.timestamp.desc())
+                            .limit(current_app.config["TOTAL_POSTS"])
+                            
+        )
+        for post in posts_to_update.all():
             post.update()
-            db.session.commit()
+        db.session.commit()
 
         if (request.args.get("page")==None):
             page = current_page
@@ -35,12 +39,18 @@ class Controller:
             page = request.args.get("page", 1, type=int)
         posts = (
             Post.query.filter_by(company_id=current_user.company_id, deleted=0)
-            .order_by(Post.pop_score.desc())
+            .order_by(Post.timestamp.desc())
             .limit(current_app.config["TOTAL_POSTS"])
             .from_self()
+            .order_by(Post.pop_score.desc())
             .paginate(page, current_app.config["POSTS_PER_PAGE"], True)
         )
-
+        # posts = (
+        #     posts_to_update
+        #     .from_self()
+        #     .order_by(Post.pop_score.desc())
+        #     .paginate(page, current_app.config["POSTS_PER_PAGE"], True)
+        # )
         start_rank_num = current_app.config["POSTS_PER_PAGE"] * (page - 1) + 1
         next_url = (
             url_for("main.index", page=posts.next_num) if posts.has_next else None
@@ -52,10 +62,6 @@ class Controller:
         ]
 
     def new():
-        for post in Post.query.filter_by(company_id=current_user.company_id).all():
-            post.update()
-            db.session.commit()
-
         page = request.args.get("page", 1, type=int)
         posts = (
             Post.query.filter_by(company_id=current_user.company_id, deleted=0)

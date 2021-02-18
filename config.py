@@ -21,8 +21,8 @@ class Config(object):
     SES_REGION_NAME = os.environ.get("SES_REGION")
     AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
     AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
-    POSTS_PER_PAGE = 7
+    POSTS_PER_PAGE = 50
     TOTAL_POSTS = 100
-    USER_POSTS_PER_DAY = 200
+    USER_POSTS_PER_DAY = 20000000
     USER_COMMENTS_PER_DAY = 15
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
