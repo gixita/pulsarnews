@@ -10,6 +10,7 @@ from app import db, login
 from sqlathanor import declarative_base, Column, relationship, AttributeConfiguration
 from sqlalchemy.ext.hybrid import hybrid_property
 from flask import current_app
+from flask_login import current_user
 
 class Company(db.Model):
     __tablename__ = 'company'
@@ -63,7 +64,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(128))
     posts = db.relationship("Post", backref="author", lazy="dynamic")
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
-    about_me = db.Column(db.String(140))
+    about_me = db.Column(db.String(180))
     karma = db.Column(db.Integer, default=1)
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     refresh_tokens = db.relationship('RefreshToken', backref='user', lazy="dynamic")
@@ -72,7 +73,7 @@ class User(UserMixin, db.Model):
     verified = db.Column(db.Boolean, default=False)
     banned = db.Column(db.Boolean, default=False)
     subscribe_newsletter = db.Column(db.Boolean, default=True)
-    
+    is_super_admin = db.relationship('Administrator', backref='user', lazy="dynamic")
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(
@@ -216,10 +217,10 @@ class Post(db.Model):
                                               on_deserialize = None)]
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(140))
+    title = db.Column(db.String(240))
     url = db.Column(db.Text())
     url_base = db.Column(db.Text())
-    text = db.Column(db.String(500))
+    text = db.Column(db.String(1000))
     timestamp = db.Column('timestamp', db.DateTime, index=True, default=datetime.utcnow())
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     score = db.Column(db.Integer, default=0)
@@ -243,6 +244,10 @@ class Post(db.Model):
     def update_votes(self):
         self.score += 1
         self.author.karma += 1
+    
+    def update_unvotes(self):
+        self.score -= 1
+        self.author.karma -= 1
 
     @hybrid_property
     def descendants(self):
@@ -251,6 +256,13 @@ class Post(db.Model):
     @hybrid_property
     def username(self):
         return User.query.filter_by(id=self.user_id).first().username
+
+    @hybrid_property
+    def is_voted(self):
+        if Vote.query.filter_by(post_id=self.id, user_id=current_user.id).first():
+            return True
+        else:
+            return False
     
     @hybrid_property
     def kids(self):
@@ -262,10 +274,6 @@ class Post(db.Model):
 
     def update(self, gravity=1.8):
         datetime_difference = datetime.utcnow() - self.timestamp
-        if self.id == 34231:
-            print("datetime diff ", datetime_difference)
-            print("datetime diff days ", datetime_difference.days)
-            print("datetime diff seconds ", datetime_difference.seconds)
         hours_passed = (
             datetime_difference.seconds / 60 
         )
@@ -348,7 +356,7 @@ class Comment(db.Model):
     _N = 6
 
     id = db.Column(db.Integer, primary_key=True)
-    text = db.Column(db.String(500))
+    text = db.Column(db.String(1000))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
     path = db.Column(db.Text, index=True)
@@ -411,3 +419,10 @@ class MailProviders(db.Model):
 
     def __repr__(self):
         return f"<id: {self.id} Domain: {self.domain}>"
+
+class Administrator(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    is_admin = db.Column(db.Boolean, default=False)
+    def __repr__(self):
+        return f"<User: {self.user_id} Post: {self.post_id}>"

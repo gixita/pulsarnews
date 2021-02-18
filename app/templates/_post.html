@@ -13,7 +13,11 @@
               <div class="post-info">
                 <a href="{{ url_for('main.upvote', post_id=post.id)}}" class="post-info-links">
                   <svg class="feather">
+                    {% if not post.is_voted %}
                     <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-up"/>
+                    {% else %}
+                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-down"/>
+                    {% endif %}
                   </svg>
                   <span class="ml-2">{{ post.score }} points</span>
                 </a>

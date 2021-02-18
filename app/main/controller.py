@@ -38,19 +38,12 @@ class Controller:
         else:
             page = request.args.get("page", 1, type=int)
         posts = (
-            Post.query.filter_by(company_id=current_user.company_id, deleted=0)
-            .order_by(Post.timestamp.desc())
-            .limit(current_app.config["TOTAL_POSTS"])
+            posts_to_update
             .from_self()
             .order_by(Post.pop_score.desc())
             .paginate(page, current_app.config["POSTS_PER_PAGE"], True)
         )
-        # posts = (
-        #     posts_to_update
-        #     .from_self()
-        #     .order_by(Post.pop_score.desc())
-        #     .paginate(page, current_app.config["POSTS_PER_PAGE"], True)
-        # )
+        
         start_rank_num = current_app.config["POSTS_PER_PAGE"] * (page - 1) + 1
         next_url = (
             url_for("main.index", page=posts.next_num) if posts.has_next else None

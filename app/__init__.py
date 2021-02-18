@@ -12,14 +12,14 @@ from flaskext.markdown import Markdown
 from flask_mail import Mail
 
 
-
 db = SQLAlchemy(model_class=FlaskBaseModel)
-migrate = Migrate()
+migrate = Migrate(compare_type=True)
 login = LoginManager()
 login.login_view = "auth.login"
 login.login_message = ""
 mail = Mail()
 moment = Moment()
+
 
 
 def create_app(config_class=Config):
@@ -32,7 +32,7 @@ def create_app(config_class=Config):
     mail.init_app(app)
     moment.init_app(app)
     markdown = Markdown(app)
-
+    
     from app.errors import bp as errors_bp
 
     app.register_blueprint(errors_bp)
@@ -40,6 +40,10 @@ def create_app(config_class=Config):
     from app.auth import bp as auth_bp
 
     app.register_blueprint(auth_bp, url_prefix="/auth")
+
+    from app.admin import bp as admin_bp
+
+    app.register_blueprint(admin_bp, url_prefix="/admin")
 
     from app.api.v1 import v1_blueprint as api_bp
 

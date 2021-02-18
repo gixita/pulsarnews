@@ -144,26 +144,6 @@ def manage_domain():
         "manage_domain.html", title="Manage domain", domains=domains
     )
 
-
-@bp.route("/admin", methods=["GET", "POST"])
-@login_required
-@company_required
-def admin_panel():
-    if not current_user.admin:
-        flash("You are not admin of your company account, you cannot access the admin panel", "danger")
-        return redirect(url_for('main.index'))
-    form = AddDomainForm(fully_managed_domain=True)
-    if form.validate_on_submit():
-        # TODO verify that the domain is not in a blacklisted list
-        domain = Domains(name=form.name.data, fully_managed_domain=form.fully_managed_domain.data, company_id=current_user.company_id)
-        db.session.add(domain)
-        db.session.commit()
-        flash("You add a new domain to your company", "success")
-        return redirect(url_for("main.index"))
-    return render_template(
-        "admin_panel.html", title="Edit Profile", form=form
-    )
-
 @bp.route("/invite_colleague", methods=["GET", "POST"])
 @login_required
 @company_required
@@ -293,7 +273,10 @@ def upvote(post_id):
         user_id=current_user.id, post_id=post_to_upvote.id
     ).first()
     if vote_query is not None:
-        flash("You already voted in this post.", "warning")
+        post_to_upvote.update_unvotes()
+        db.session.delete(vote_query)
+        db.session.commit()
+        flash("You cancel you vote.", "success")
     else:
         post_to_upvote.update_votes()
         vote = Vote(user_id=current_user.id, post_id=post_to_upvote.id)
@@ -400,9 +383,12 @@ import os
 @bp.route("/load_new_data", methods=["GET"])
 def load_new_data():
     csv_file_path = os.getcwd()+'/app/static/articles.csv'
+    i = 0
     with open(csv_file_path, 'r') as f:    
         lines = f.readlines()
         for line in lines:
+            i = i + 1
+            print(i)
             post_exist = Post.query.filter_by(title=line.split(';')[0]).first()
             if not post_exist:
                 post = Post(
