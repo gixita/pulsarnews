@@ -425,4 +425,13 @@ class Administrator(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     is_admin = db.Column(db.Boolean, default=False)
     def __repr__(self):
-        return f"<User: {self.user_id} Post: {self.post_id}>"
+        return f"<Super administrator User: {self.user_id} Post: {self.post_id}>"
+
+class ReadedPost(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
+    post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
+    flagged_post = db.Column(db.Boolean, default=False)
+    reason = db.Column(db.String(64))
+    def __repr__(self):
+        return f"<ReadedPost User: {self.user_id} Post: {self.post_id}>"
