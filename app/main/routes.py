@@ -276,7 +276,7 @@ def upvote(post_id):
         post_to_upvote.update_unvotes()
         db.session.delete(vote_query)
         db.session.commit()
-        flash("You cancel you vote.", "success")
+        flash("You cancel your vote.", "success")
     else:
         post_to_upvote.update_votes()
         vote = Vote(user_id=current_user.id, post_id=post_to_upvote.id)

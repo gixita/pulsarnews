@@ -20,8 +20,19 @@
   <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
   
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css')}}">
-  
-  
+  <script type="text/javascript">
+    $(document).ready(function() {
+        var text_max = 1000;
+        $('#textarea_feedback').html(text_max + ' characters remaining');
+
+        $('#text').keyup(function() {
+            var text_length = $('#text').val().length;
+            var text_remaining = text_max - text_length;
+
+            $('#textarea_feedback').html(text_remaining + ' characters remaining');
+        });
+    });
+	</script>
 </head>
 <body>
   
