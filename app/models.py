@@ -272,6 +272,8 @@ class Post(db.Model):
     def total_comments(self):
         return len(Comment.query.filter_by(post_id=self.id).all())
 
+    # TODO maybe that should be a hybrid_property instead of writing it to the database
+    # Let's wait for to setup the notification that will maybe use it
     def update(self, gravity=1.8):
         datetime_difference = datetime.utcnow() - self.timestamp
         hours_passed = (
