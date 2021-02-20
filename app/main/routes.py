@@ -48,18 +48,24 @@ def company_required(f):
 
 
 @bp.route("/", methods=["GET"])
+@bp.route("/search", methods=["GET"])
 @bp.route("/index", methods=["GET"])
 @login_required
 @company_required
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for("main.index"))
-    items = Controller.index()
+    search_terms = request.args.get("q")
+    if search_terms:
+        title = "Search for \""+search_terms+"\""
+    else:
+        title="Trending"
+    items = Controller.index(search_terms=search_terms)
     if len(items[0])==0:
         flash("Welcome, there is no article yet in your company. Submit the first one by clicking the submit button", "success")
     return render_template(
         "index.html",
-        title="Trending",
+        title=title,
         posts=items[0],
         next_url=items[1],
         start_rank_num=items[2],
