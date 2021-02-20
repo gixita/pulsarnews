@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="col-md-7 col-lg-8">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4">
+        <h1 class="h1-index text-muted">{{ title }}</h1>
+    </div>
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.name.label }}<br>
+            {{ form.name(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.name.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.company_id.label }}<br>
+            {{ form.company_id(class="form-control form-control-lg") }}<br>
+            {% for error in form.company_id.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.fully_managed_domain() }} {{ form.fully_managed_domain.label }}<br>
+            {% for error in form.fully_managed_domain.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <button class="btn btn-primary btn-lg" type="submit">Save</button>
+    </form>
+</div>
+{% endblock %}

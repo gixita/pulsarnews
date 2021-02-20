@@ -22,17 +22,17 @@
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css')}}">
   <script type="text/javascript">
     $(document).ready(function() {
-        var text_max = 1000;
-        $('#textarea_feedback').html(text_max + ' characters remaining');
-
-        $('#text').keyup(function() {
-            var text_length = $('#text').val().length;
-            var text_remaining = text_max - text_length;
-
-            $('#textarea_feedback').html(text_remaining + ' characters remaining');
-        });
+      var text_max = 1000;
+      $('#textarea_feedback').html(text_max + ' characters remaining');
+      
+      $('#text').keyup(function() {
+        var text_length = $('#text').val().length;
+        var text_remaining = text_max - text_length;
+        
+        $('#textarea_feedback').html(text_remaining + ' characters remaining');
+      });
     });
-	</script>
+  </script>
 </head>
 <body class="my-font bg-light">
   
@@ -64,7 +64,15 @@
           </h6>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.index') }}">
+              <a class="nav-link" aria-current="page" href="{{ url_for('admin.index') }}">
+                <svg class="feather mx-2">
+                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#trending-up"/>
+                </svg>
+                Dashboard
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" aria-current="page" href="{{ url_for('admin.users') }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#trending-up"/>
                 </svg>
@@ -72,7 +80,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.new') }}">
+              <a class="nav-link" href="{{ url_for('admin.companies') }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#watch"/>
                 </svg>
@@ -80,7 +88,15 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.submit') }}">
+              <a class="nav-link" href="{{ url_for('admin.domains') }}">
+                <svg class="feather mx-2">
+                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#watch"/>
+                </svg>
+                Domains
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin.posts') }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#plus"/>
                 </svg>
@@ -88,10 +104,6 @@
               </a>
             </li>
           </ul>
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-5 mb-3 text-muted">
-            <span>My profile</span>
-          </h6>
-          
         </div>
       </nav>
       
