@@ -2,34 +2,34 @@
 
 {% block content %}
 <div class="col-md-7 col-lg-8">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-        <h1 class="content-heading d-flex justify-content-between align-items-center px-3 mt-2 mb-1 text-muted">Add a mail domain to your company account</h1>
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4">
+        <h1 class="h1-index text-muted">{{ title }}</h1>
     </div>
-    
-    
-    <form action="" method="post" novalidate>
-        {{ form.hidden_tag() }}
-        <p>
-            <b>{{ form.name.label }}</b><br>
-            <div class="input-group">
-                <span class="input-group-text" id="basic-addon1">@</span>
+    <div class="mx-md-5"> 
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p>
+                <b>{{ form.name.label }}</b><br>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon1">@</span>
+                    
+                    {{ form.name(class="form-control", placeholder="mycompany.com") }}
+                </div>
+                <br>
+                {% for error in form.name.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+            </p>
+            <p>
                 
-                {{ form.name(class="form-control", placeholder="mycompany.com") }}
-            </div>
-            <br>
-            {% for error in form.name.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-        </p>
-        <p>
-            
-            {{ form.fully_managed_domain() }}&nbsp;{{ form.fully_managed_domain.label }}<br>
-            {% for error in form.fully_managed_domain.errors %}
-            <span style="color: red;">[{{ error }}]</span>
-            {% endfor %}
-            <br><p class="small">Every new user with a valid email domain mentionned above will automatically be added to your company. If this email domain is used by other companies, deselect the previous checkbox, every new users will need to be invited in order to join your company.</p>
-        </p>
-        <button class="btn btn-primary btn-lg" type="submit">Add mail domain</button>
-    </form>
+                {{ form.fully_managed_domain() }}&nbsp;{{ form.fully_managed_domain.label }}<br>
+                {% for error in form.fully_managed_domain.errors %}
+                <span style="color: red;">[{{ error }}]</span>
+                {% endfor %}
+                <br><p class="important-message">If checked, every new user with a valid email domain mentionned above will automatically be added to your company and see all your company posts. This is recommended if your company is the only one that uses this domain name.<br>If the previous checkbox is not checked, every new users will need to be invited in order to join your company. This should be used if your company share the mail domain mentionned above.</p>
+            </p>
+            <button class="btn btn-primary btn-lg" type="submit">Add mail domain</button>
+        </form>
+    </div>
 </div>
 {% endblock %}

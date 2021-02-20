@@ -133,7 +133,7 @@ def add_domain():
                 return redirect(url_for("main.index"))
             else:
                 flash("The domain is already in your list", "warning")
-        return render_template("add_domain.html", title="Edit Profile", form=form)
+        return render_template("add_domain.html", title="Add your company mail domain", form=form)
 
 @bp.route("/manage_domain", methods=["GET", "POST"])
 @login_required

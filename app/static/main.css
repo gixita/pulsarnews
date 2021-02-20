@@ -93,6 +93,15 @@
     background: #fff
 }
 
+.important-message {
+    padding: 10px;
+    border: 2px solid darkred;
+    margin-top: 2px;
+    border-radius: 10px;
+    background: #fff;
+    color: darkred;
+}
+
 .max-width-posts {
     max-width: 1200px;
 }
