@@ -10,7 +10,7 @@ def send_password_reset_email(user):
             "email/reset_password.txt", user=user, token=token
         ),
         html_body=render_template(
-            "email/reset_password.html", user=user, token=token
+            "email/reset_password_bootstrap.html", user=user, token=token
         )
     )
 
@@ -25,6 +25,6 @@ def send_verification_email(user):
             "email/email_verification.txt", user=user, token=token
         ),
         html_body=render_template(
-            "email/email_verification.html", user=user, token=token
+            "email/email_verif_bootstrap.html", user=user, token=token
         )
     )

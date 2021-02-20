@@ -12,15 +12,18 @@
             <div class="d-flex flex-row mt-2 text-black-50 date-time">
               <div class="post-info">
                 <a href="{{ url_for('main.upvote', post_id=post.id)}}" class="post-info-links">
-                  <svg class="feather">
-                    {% if not post.is_voted %}
+                  {% if post.is_voted %}
+                  <svg class="feather feather-color-active">
                     <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-up"/>
-                    {% else %}
-                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-down"/>
-                    {% endif %}
                   </svg>
+                  {% else %}
+                  <svg class="feather feather-color">
+                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-up"/>
+                  </svg>
+                  {% endif %}
+                
                   <span class="ml-2">{{ post.score }} p<span class="d-none d-md-inline">oints</span></span>
-                </a>
+                  </a>
               </div>
               <div class="post-info">
                 
@@ -57,7 +60,11 @@
                   </svg>
                 </button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  {% if post.is_voted %}
+                  <a class="dropdown-item" href="{{ url_for('main.upvote', post_id=post.id)}}">Cancel vote</a>
+                  {% else %}
                   <a class="dropdown-item" href="{{ url_for('main.upvote', post_id=post.id)}}">Upvote</a>
+                  {% endif %}
                   <a class="dropdown-item" href="{{ url_for('main.post_page', post_id=post.id)}}">Comments</a>
                   {%if current_user == post.author or current_user.admin == 1 %}
                   <a class="dropdown-item" href="{{ url_for('main.edit_post', post_id=post.id)}}">Edit</a>

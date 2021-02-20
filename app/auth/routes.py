@@ -23,6 +23,7 @@ from app.main.invitation import verify_invitation_token
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    flash("This is an alpha version and could be unstable", "warning")
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     form = LoginEmailForm()

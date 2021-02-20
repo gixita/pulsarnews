@@ -63,6 +63,14 @@
     fill: none;
 }
 
+.feather-color {
+    stroke: currentColor;
+}
+
+.feather-color-active {
+    stroke: slateblue;
+}
+
 .post-info {
     margin-right: 10px;
 }
@@ -91,6 +99,10 @@
     margin-top: 2px;
     border-radius: 3px;
     background: #fff
+}
+
+.color-voted {
+    color: rgb(92, 92, 92);
 }
 
 .important-message {
