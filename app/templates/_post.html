@@ -1,15 +1,15 @@
 <div class="row margin-row">
-  <div class="mt-3">
-    <ul class="list list-inline">
-      <li class="d-flex justify-content-between">
+  <div class="mt-4 mb-md-1">
+    <ul class="list list-inline ">
+      <li class="shadow-sm d-flex justify-content-between">
         <div class="d-flex flex-row align-items-center">
           <div class="ml-2">
-            {% if post.url %}
-            <a class="post-title" href="{{ post.url }}">{{ post.title }}</a><span class="post-via-title">(via {{ post.url_base }})</span>
-            {% else %}
-            <a class="post-title" href="{{ url_for('main.post_page', post_id=post.id)}}">{{ post.title }}</a>
+            
+            <a class="post-title" href="{{ post.url }}"><b>{{ post.title }}</b></a><span class="post-via-title">(via {{ post.url_base }})</span>
+            {% if post.text %}
+            <div class="px-3 pt-2 pb-2 text-muted">{{ post.text }}</div>
             {% endif %}
-            <div class="d-flex flex-row mt-1 text-black-50 date-time">
+            <div class="d-flex flex-row mt-2 text-black-50 date-time">
               <div class="post-info">
                 <a href="{{ url_for('main.upvote', post_id=post.id)}}" class="post-info-links">
                   <svg class="feather">
@@ -19,7 +19,7 @@
                     <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-down"/>
                     {% endif %}
                   </svg>
-                  <span class="ml-2">{{ post.score }} points</span>
+                  <span class="ml-2">{{ post.score }} p<span class="d-none d-md-inline">oints</span></span>
                 </a>
               </div>
               <div class="post-info">
@@ -43,7 +43,7 @@
                   <svg class="feather">
                     <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#message-square"/>
                   </svg>
-                  <span class="ml-2">{{ post.total_comments() }} Comments</span></div>
+                  <span class="ml-2">{{ post.total_comments() }}</span><span class="d-none d-md-inline"> comments</span></div>
                 </a>
               </div>
             </div>
@@ -51,19 +51,19 @@
           <div class="d-flex flex-row align-items-center">
             <div class="d-flex flex-column mr-2">
               <div class="dropdown">
-                <button class="btn btn-sm btn-outline-secondary" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                <button class="btn btn-sm " type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
                   <svg class="feather">
-                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#menu"/>
+                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#more-vertical"/>
                   </svg>
                 </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" href="{{ url_for('main.upvote', post_id=post.id)}}">Upvote</a>
+                  <a class="dropdown-item" href="{{ url_for('main.post_page', post_id=post.id)}}">Comments</a>
                   {%if current_user == post.author or current_user.admin == 1 %}
-                  <li><a class="dropdown-item" href="{{ url_for('main.edit_post', post_id=post.id)}}">Edit</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('main.delete_post', post_id=post.id)}}">Delete</a></li>
+                  <a class="dropdown-item" href="{{ url_for('main.edit_post', post_id=post.id)}}">Edit</a>
+                  <a class="dropdown-item" href="{{ url_for('main.delete_post', post_id=post.id)}}">Delete</a>
                   {% endif %}
-                  <li><a class="dropdown-item" href="{{ url_for('main.post_page', post_id=post.id)}}">Comments</a></li>
-                  <li><a class="dropdown-item" href="{{ url_for('main.upvote', post_id=post.id)}}">Upvote</a></li>
-                </ul>
+                </div>
               </div>
             </div> 
           </div>

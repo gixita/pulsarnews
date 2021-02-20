@@ -27,4 +27,4 @@ def super_admin_required(f):
 @login_required
 @super_admin_required
 def index():
-    return "Admin panel"
+    return render_template("admin/base.html", title="Invite a colleague")

@@ -59,7 +59,7 @@ def index():
         flash("Welcome, there is no article yet in your company. Submit the first one by clicking the submit button", "success")
     return render_template(
         "index.html",
-        title="Company feed - bests",
+        title="Trending",
         posts=items[0],
         next_url=items[1],
         start_rank_num=items[2],
@@ -72,7 +72,7 @@ def new():
     items = Controller.new()
     return render_template(
         "index.html",
-        title="Company feed - newests",
+        title="Newest",
         posts=items[0],
         next_url=items[1],
         start_rank_num=items[2],
@@ -225,7 +225,7 @@ def edit_post(post_id):
             )
             return redirect(url_for("main.index"))
 
-    return render_template("edit_post.html", title="Edit post", form=form)
+    return render_template("submit.html", title="Edit post", form=form)
 
 @bp.route("/post/<post_id>", methods=["GET", "POST"])
 @login_required
