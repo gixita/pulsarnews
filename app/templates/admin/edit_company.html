@@ -1,29 +1,26 @@
-{% extends "base.html" %}
+{% extends "admin/base.html" %}
 
 {% block content %}
 <div class="col-md-7 col-lg-8">
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4">
         <h1 class="h1-index text-muted">{{ title }}</h1>
     </div>
-    <div class="mx-md-5">
     <form action="" method="post">
         {{ form.hidden_tag() }}
         <p>
-            {{ form.username.label }}<br>
-            {{ form.username(class="form-control form-control-lg", size=30) }}<br>
-            {% for error in form.username.errors %}
+            {{ form.name.label }}<br>
+            {{ form.name(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.name.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <p>
-            {{ form.about_me.label }}<br>
-            {{ form.about_me(class="form-control form-control-lg",cols=50, rows=4) }}<br>
-            {% for error in form.about_me.errors %}
+            {{ form.banned() }} {{ form.banned.label }}<br>
+            {% for error in form.banned.errors %}
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
         <button class="btn btn-primary btn-lg" type="submit">Save</button>
     </form>
-</div>
 </div>
 {% endblock %}

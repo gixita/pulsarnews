@@ -48,18 +48,27 @@ def company_required(f):
 
 
 @bp.route("/", methods=["GET"])
+@bp.route("/search", methods=["GET"])
 @bp.route("/index", methods=["GET"])
 @login_required
 @company_required
 def index():
     if not current_user.is_authenticated:
         return redirect(url_for("main.index"))
-    items = Controller.index()
-    if len(items[0])==0:
+    search_terms = request.args.get("q")
+    if search_terms:
+        title = "Search for \""+search_terms+"\""
+    else:
+        title="Trending"
+    items = Controller.index(search_terms=search_terms)
+    if len(items[0])==0 and not search_terms:
         flash("Welcome, there is no article yet in your company. Submit the first one by clicking the submit button", "success")
+    if len(items[0])==0 and search_terms:
+        flash("We did not find any matching result", "warning")
+    
     return render_template(
         "index.html",
-        title="Company feed - bests",
+        title=title,
         posts=items[0],
         next_url=items[1],
         start_rank_num=items[2],
@@ -72,7 +81,7 @@ def new():
     items = Controller.new()
     return render_template(
         "index.html",
-        title="Company feed - newests",
+        title="Newest",
         posts=items[0],
         next_url=items[1],
         start_rank_num=items[2],
@@ -133,7 +142,7 @@ def add_domain():
                 return redirect(url_for("main.index"))
             else:
                 flash("The domain is already in your list", "warning")
-        return render_template("add_domain.html", title="Edit Profile", form=form)
+        return render_template("add_domain.html", title="Add your company mail domain", form=form)
 
 @bp.route("/manage_domain", methods=["GET", "POST"])
 @login_required
@@ -225,7 +234,7 @@ def edit_post(post_id):
             )
             return redirect(url_for("main.index"))
 
-    return render_template("edit_post.html", title="Edit post", form=form)
+    return render_template("submit.html", title="Edit post", form=form)
 
 @bp.route("/post/<post_id>", methods=["GET", "POST"])
 @login_required
@@ -276,7 +285,7 @@ def upvote(post_id):
         post_to_upvote.update_unvotes()
         db.session.delete(vote_query)
         db.session.commit()
-        flash("You cancel you vote.", "success")
+        flash("You cancel your vote.", "success")
     else:
         post_to_upvote.update_votes()
         vote = Vote(user_id=current_user.id, post_id=post_to_upvote.id)
@@ -348,6 +357,7 @@ def reply(comment_id):
 @login_required
 @company_required
 def upvote_comment(comment_id):
+    # TODO unvote comment and check if comment is already upvoted
     comment_to_upvote = Comment.query.filter_by(company_id=current_user.company_id, id=comment_id).first_or_404()
     vote_query = Comment_Vote.query.filter_by(
         user_id=current_user.id, comment_id=comment_to_upvote.id
@@ -380,26 +390,26 @@ import os
 #                 print(line.strip(), " - added")
 #     return redirect(url_for("main.index"))
 
-@bp.route("/load_new_data", methods=["GET"])
-def load_new_data():
-    csv_file_path = os.getcwd()+'/app/static/articles.csv'
-    i = 0
-    with open(csv_file_path, 'r') as f:    
-        lines = f.readlines()
-        for line in lines:
-            i = i + 1
-            print(i)
-            post_exist = Post.query.filter_by(title=line.split(';')[0]).first()
-            if not post_exist:
-                post = Post(
-                    title=line.split(';')[0],
-                    url=line.split(';')[1],
-                    text='',
-                    author=current_user,
-                    company_id=current_user.company_id,
-                )
-                post.format_post(line.split(';')[1])
-                db.session.add(post)
-                db.session.commit()
-    return redirect(url_for("main.index"))
+# @bp.route("/load_new_data", methods=["GET"])
+# def load_new_data():
+#     csv_file_path = os.getcwd()+'/app/static/articles.csv'
+#     i = 0
+#     with open(csv_file_path, 'r') as f:    
+#         lines = f.readlines()
+#         for line in lines:
+#             i = i + 1
+#             print(i)
+#             post_exist = Post.query.filter_by(title=line.split(';')[0]).first()
+#             if not post_exist:
+#                 post = Post(
+#                     title=line.split(';')[0],
+#                     url=line.split(';')[1],
+#                     text='',
+#                     author=current_user,
+#                     company_id=current_user.company_id,
+#                 )
+#                 post.format_post(line.split(';')[1])
+#                 db.session.add(post)
+#                 db.session.commit()
+#     return redirect(url_for("main.index"))
 

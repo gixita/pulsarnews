@@ -37,26 +37,26 @@ class EditProfileForm(FlaskForm):
 
 class PostForm(FlaskForm):
     title = StringField(
-        "Title", validators=[DataRequired(), Length(min=1, max=80)]
+        "Title", validators=[DataRequired(), Length(min=1, max=240)]
     )
     text = TextAreaField(
-        "Submission Text", validators=[Optional(), Length(min=1, max=280)]
+        "Description and what's the impact for your company (optional)", validators=[Optional(), Length(min=1, max=1000)]
     )
-    url = StringField("URL", validators=[Optional(), URL()])
+    url = StringField("URL", validators=[DataRequired(), URL()])
     submit = SubmitField("Submit")
 
     def validate_text(self, text):
-        if len(self.url.data) > 0:
+        if len(self.url.data) < 0:
             raise ValidationError("Please choose text or link post.")
 
     def validate_url(self, url):
-        if len(self.text.data) > 0:
+        if len(self.text.data) < 0:
             raise ValidationError("Please choose text or link post.")
 
 
 class CommentForm(FlaskForm):
     text = TextAreaField(
-        "Comment post", validators=[DataRequired(), Length(min=1, max=280)]
+        "Comment post", validators=[DataRequired(), Length(min=1, max=1000)]
     )
     submit = SubmitField("Add Comment")
 

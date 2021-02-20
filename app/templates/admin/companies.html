@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %} 
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4">
+    <h1 class="h1-index text-muted">{{ title }}</h1>
+</div>
+<ol class="mx-2 px-0 mx-md-5 max-width-posts" start="{{ start_rank_num }}">
+    <table class="table">
+        <tbody>  
+            <tr>
+                <th>Name</th>
+                <th>Banned</th>
+                <th>Edit company</th>
+                <th>See posts</th>
+                <th>See users</th>
+                <th>See users</th>
+            </tr>
+            {% for company in companies %} 
+            <tr>
+                <td>{{ company.name }}</td>
+                <td>{{ company.banned }}</td>
+                <td><a href="{{ url_for('admin.edit_company', company_id=company.id) }}">Edit</a></td>
+                <td><a href="{{ url_for('admin.posts', company_id=company.id) }}">Posts</a></td>
+                <td><a href="{{ url_for('admin.users', company_id=company.id) }}">Users</a></td>
+                <td><a href="{{ url_for('admin.domains', company_id=company.id) }}">Domains</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</ol>
+{% if next_url %} <a href="{{ next_url }}"> More</a> {% endif %} 
+
+{% endblock %}

@@ -23,6 +23,7 @@ from app.main.invitation import verify_invitation_token
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
+    flash("This is an alpha version and could be unstable", "warning")
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
     form = LoginEmailForm()
@@ -210,18 +211,21 @@ def create_company():
 
 
 
-@bp.route("/reset_password/<token>", methods=["GET", "POST"])
-def reset_password(token):
+@bp.route("/reset_password/", methods=["GET", "POST"])
+def reset_password():
+    token = request.args.get("token")
+    if token:
+        user = User.verify_reset_password_token(token)
+        if not user:
+            flash("Your token is not valid or expired, request a new one from the login page", "danger")
+            return redirect(url_for("main.index"))
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
-    user = User.verify_reset_password_token(token)
-    if not user:
-        return redirect(url_for("main.index"))
+        user = current_user
     form = ResetPasswordForm()
-    if form.validate_on_submit():
+    if form.validate_on_submit() and user:
         user.set_password(form.password.data)
         db.session.commit()
         flash("Your password has been reset.", "success")
         return redirect(url_for("auth.login"))
-    return render_template("auth/reset_password.html", form=form)
+    return render_template("auth/reset_password.html", title="Reset password", form=form)
 

@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %} {% block content %} 
+
+<div class="col-md-7 col-lg-8">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4">
+        <h1 class="h1-index text-muted">{{ title }}</h1>
+    </div>
+
+
+    Number of companies : 
+    <ul>
+        <li>
+            {{ dashboard['COMPANIES_ACTIVE'] }} active
+        </li>
+        <li>
+            {{ dashboard['COMPANIES_NOTACTIVE'] }} desactivated
+        </li>
+        <li>
+            {{ dashboard['COMPANIES_DOMAINS'] }} domains
+        </li>
+    </ul>
+
+    Number of users : 
+    <ul>
+        <li>
+            {{ dashboard['USERS_VERIFIED'] }} verified
+        </li>
+        <li>
+            {{ dashboard['USERS_UNVERIFIED'] }} unverified
+        </li>
+        <li>
+            {{ dashboard['USERS_BANNED'] }} banned
+        </li>
+    </ul>
+    Number of posts : 
+    <ul>
+        <li>
+            {{ dashboard['POSTS'] }} posts
+        </li>
+        <li>
+            {{ dashboard['POSTS_VOTES'] }} votes
+        </li>
+        <li>
+            {{ dashboard['POSTS_COMMENTS'] }} comments
+        </li>
+    </ul>
+</div>
+
+{% endblock %}

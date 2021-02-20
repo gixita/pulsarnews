@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %} 
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4">
+    <h1 class="h1-index text-muted">{{ title }}</h1>
+</div>
+<ol class="mx-2 px-0 mx-md-5 max-width-posts" start="{{ start_rank_num }}">
+    <table class="table">
+        <tbody>  
+            <tr>
+                <th>Name</th>
+                <th>Fully managed</th>
+                <th>Company ID</th>
+                <th>Edit domain</th>
+            </tr>
+            {% for domain in domains %} 
+            <tr>
+                <td>{{ domain.name }}</td>
+                <td>{{ domain.fully_managed_domain }}</td>
+                <td>{{ domain.company_id }}</td>
+                <td><a href="{{ url_for('admin.edit_domain', domain_id=domain.id) }}">Edit</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</ol>
+{% if next_url %} <a href="{{ next_url }}"> More</a> {% endif %} 
+
+{% endblock %}

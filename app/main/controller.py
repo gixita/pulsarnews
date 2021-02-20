@@ -23,12 +23,19 @@ class Controller:
         return request.args.get("next") or request.referrer or url_for(default)
 
 
-    def index(current_page = 1):
-        posts_to_update = ( Post.query.filter_by(company_id=current_user.company_id, deleted=0)
-                            .order_by(Post.timestamp.desc())
-                            .limit(current_app.config["TOTAL_POSTS"])
-                            
-        )
+    def index(search_terms='', current_page = 1):
+        if search_terms is None:
+            posts_to_update = ( Post.query.filter_by(company_id=current_user.company_id, deleted=0)
+                                .order_by(Post.timestamp.desc())
+                                .limit(current_app.config["TOTAL_POSTS"])
+            )
+        else:
+            search_terms_contains = '%'+search_terms+'%'
+            posts_to_update = ( Post.query.filter_by(company_id=current_user.company_id, deleted=0)
+                                .filter(Post.title.ilike(search_terms_contains) | Post.text.ilike(search_terms_contains))
+                                .order_by(Post.timestamp.desc())
+                                .limit(current_app.config["TOTAL_POSTS"])
+            )
         for post in posts_to_update.all():
             post.update()
         db.session.commit()
@@ -45,10 +52,14 @@ class Controller:
         )
         
         start_rank_num = current_app.config["POSTS_PER_PAGE"] * (page - 1) + 1
-        next_url = (
-            url_for("main.index", page=posts.next_num) if posts.has_next else None
-        )
-
+        if search_terms is None:
+            next_url = (
+                url_for("main.index", page=posts.next_num) if posts.has_next else None
+            )
+        else:
+            next_url = (
+                url_for("main.index", page=posts.next_num, q=search_terms) if posts.has_next else None
+            )
         return [posts.items,
             next_url,
             start_rank_num,
