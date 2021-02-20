@@ -61,8 +61,11 @@ def index():
     else:
         title="Trending"
     items = Controller.index(search_terms=search_terms)
-    if len(items[0])==0:
+    if len(items[0])==0 and not search_terms:
         flash("Welcome, there is no article yet in your company. Submit the first one by clicking the submit button", "success")
+    if len(items[0])==0 and search_terms:
+        flash("We did not find any matching result", "warning")
+    
     return render_template(
         "index.html",
         title=title,

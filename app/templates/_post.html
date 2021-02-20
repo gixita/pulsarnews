@@ -21,25 +21,25 @@
                     <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-up"/>
                   </svg>
                   {% endif %}
-                
+                  
                   <span class="ml-2">{{ post.score }} p<span class="d-none d-md-inline">oints</span></span>
-                  </a>
+                </a>
               </div>
               <div class="post-info">
                 
-                  <svg class="feather">
-                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#user"/>
-                  </svg>
-                  <span class="ml-2">{{ post.author.username }}</span>
+                <svg class="feather">
+                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#user"/>
+                </svg>
+                <span class="ml-2">{{ post.author.username }}</span>
                 
               </div>
               <div class="post-info">
                 
-                  <svg class="feather">
-                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#clock"/>
-                  </svg>
-                  <span class="ml-2">{{ moment(post.timestamp).fromNow() }}</span>
-               
+                <svg class="feather">
+                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#clock"/>
+                </svg>
+                <span class="ml-2">{{ moment(post.timestamp).fromNow() }}</span>
+                
               </div>
               <div class="post-info">
                 <a href="{{ url_for('main.post_page', post_id=post.id)}}" class="post-info-links">

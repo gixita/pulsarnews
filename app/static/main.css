@@ -101,6 +101,17 @@
     background: #fff
 }
 
+.list-comment li {
+    list-style: none;
+    padding: 10px;
+    border: 1px solid #e3dada;
+    border-left: 5px solid rgb(160, 154, 204);
+    margin-top: 0px;
+    border-radius: 0px;
+    background: #fff
+}
+
+
 .color-voted {
     color: rgb(92, 92, 92);
 }
