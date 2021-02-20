@@ -357,6 +357,7 @@ def reply(comment_id):
 @login_required
 @company_required
 def upvote_comment(comment_id):
+    # TODO unvote comment and check if comment is already upvoted
     comment_to_upvote = Comment.query.filter_by(company_id=current_user.company_id, id=comment_id).first_or_404()
     vote_query = Comment_Vote.query.filter_by(
         user_id=current_user.id, comment_id=comment_to_upvote.id
@@ -389,26 +390,26 @@ import os
 #                 print(line.strip(), " - added")
 #     return redirect(url_for("main.index"))
 
-@bp.route("/load_new_data", methods=["GET"])
-def load_new_data():
-    csv_file_path = os.getcwd()+'/app/static/articles.csv'
-    i = 0
-    with open(csv_file_path, 'r') as f:    
-        lines = f.readlines()
-        for line in lines:
-            i = i + 1
-            print(i)
-            post_exist = Post.query.filter_by(title=line.split(';')[0]).first()
-            if not post_exist:
-                post = Post(
-                    title=line.split(';')[0],
-                    url=line.split(';')[1],
-                    text='',
-                    author=current_user,
-                    company_id=current_user.company_id,
-                )
-                post.format_post(line.split(';')[1])
-                db.session.add(post)
-                db.session.commit()
-    return redirect(url_for("main.index"))
+# @bp.route("/load_new_data", methods=["GET"])
+# def load_new_data():
+#     csv_file_path = os.getcwd()+'/app/static/articles.csv'
+#     i = 0
+#     with open(csv_file_path, 'r') as f:    
+#         lines = f.readlines()
+#         for line in lines:
+#             i = i + 1
+#             print(i)
+#             post_exist = Post.query.filter_by(title=line.split(';')[0]).first()
+#             if not post_exist:
+#                 post = Post(
+#                     title=line.split(';')[0],
+#                     url=line.split(';')[1],
+#                     text='',
+#                     author=current_user,
+#                     company_id=current_user.company_id,
+#                 )
+#                 post.format_post(line.split(';')[1])
+#                 db.session.add(post)
+#                 db.session.commit()
+#     return redirect(url_for("main.index"))
 
