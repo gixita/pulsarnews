@@ -46,6 +46,7 @@ def login():
 @bp.route("/login_password", methods=["GET", "POST"])
 def login_with_password():
     if current_user.is_authenticated:
+        flash("You are already logged in", "warning")
         return redirect(url_for("main.index"))
     email = request.args.get("email")
     if not email:
@@ -59,6 +60,7 @@ def login_with_password():
             if user is None or not user.check_password(form.password.data):
                 flash("Invalid username or password", "warning")
                 return redirect(url_for("auth.login"))
+            # TODO in post method already authenticated user can relogin without get the flash message of "you are already looged in"
             login_user(user, remember=True)
             next_page = request.args.get("next")
             if not next_page or url_parse(next_page).netloc != "":
