@@ -30,16 +30,8 @@ class Config(object):
     CLIENT_ID = os.environ.get('CLIENT_ID')
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
     CALLBACK_PATH = '/auth/signin-oidc'
-    HTTPS_SCHEME = 'https'
     AUTHORITY = os.environ.get('AUTHORITY')
     REDIRECT_PATH = os.environ.get('REDIRECT_PATH')
     ENDPOINT = os.environ.get('ENDPOINT')
     SCOPE = [os.environ.get('SCOPE')]
     SESSION_TYPE = "filesystem" 
-    
-    AuthenticationConfig = {
-        "TENANT": TENANT,
-        "CLIENT_ID": CLIENT_ID,
-        "CLIENT_SECRET": CLIENT_SECRET,
-        "HTTPS_SCHEME": HTTPS_SCHEME
-    }
