@@ -30,7 +30,7 @@ class Config(object):
     CLIENT_ID = os.environ.get('CLIENT_ID')
     CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
     CALLBACK_PATH = '/auth/signin-oidc'
-    #HTTPS_SCHEME = 'http'
+    HTTPS_SCHEME = 'https'
     AUTHORITY = os.environ.get('AUTHORITY')
     REDIRECT_PATH = os.environ.get('REDIRECT_PATH')
     ENDPOINT = os.environ.get('ENDPOINT')
