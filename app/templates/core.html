@@ -3,6 +3,7 @@
   <meta charset="utf-8">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <script src= 'https://statics.teams.cdn.office.net/sdk/v1.6.0/js/MicrosoftTeams.min.js'></script>
   <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
   <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
   {{ moment.include_jquery() }}
@@ -16,6 +17,9 @@
   {% endif %}
 </head>
 <body class="body-grey">
+  <script>
+    microsoftTeams.initialize();
+    </script>
   {% with messages = get_flashed_messages(with_categories=true) %}
   {% if messages %}
   {% for category, message in messages %}
