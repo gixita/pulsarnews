@@ -8,3 +8,4 @@ migrations
 __pycache__
 venv
 app.__pycache__
+aad.config.json

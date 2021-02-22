@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request, url_for, jsonify
+from flask import flash, redirect, render_template, request, url_for, jsonify, current_app, session
 from flask_login import current_user, login_user, logout_user
 
 
@@ -19,7 +19,7 @@ import jwt
 from app.models import User, Company, Domains, MailProviders
 from app.auth.email import send_password_reset_email, send_verification_email
 from app.main.invitation import verify_invitation_token
-
+import msal
 
 @bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -41,7 +41,55 @@ def login():
                 #return render_template("auth/login_password.html", title="Sign In", form=formPassword)
         else:
             flash("Only corporate account are allowed to connect", "warning")
-    return render_template("auth/login_email.html", title="Sign In", form=form)
+    return render_template("auth/login_email.html", title="Sign In", args=request.args.items(), form=form)
+
+@bp.route("/login_azure")
+def login_azure():
+    session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'])
+    return render_template("auth/login_azure.html", auth_url=session["flow"]["auth_uri"], version=msal.__version__)
+
+@bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
+def authorized():
+    try:
+        cache = _load_cache()
+        result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
+            session.get("flow", {}), request.args)
+        if "error" in result:
+            return render_template("auth/auth_error.html", result=result)
+        session["user"] = result.get("id_token_claims")
+        _save_cache(cache)
+    except ValueError:  # Usually caused by CSRF
+        pass  # Simply ignore them
+    return redirect(url_for("main.index"))
+
+def _load_cache():
+    cache = msal.SerializableTokenCache()
+    if session.get("token_cache"):
+        cache.deserialize(session["token_cache"])
+    return cache
+
+def _save_cache(cache):
+    if cache.has_state_changed:
+        session["token_cache"] = cache.serialize()
+
+def _build_msal_app(cache=None, authority=None):
+    return msal.ConfidentialClientApplication(
+        current_app.config['CLIENT_ID'], authority=authority or current_app.config['AUTHORITY'],
+        client_credential=current_app.config['CLIENT_SECRET'], token_cache=cache)
+
+def _build_auth_code_flow(authority=None, scopes=None):
+    return _build_msal_app(authority=authority).initiate_auth_code_flow(
+        scopes or [],
+        redirect_uri=url_for("auth.authorized", _external=True))
+
+def _get_token_from_cache(scope=None):
+    cache = _load_cache()  # This web app maintains one cache per session
+    cca = _build_msal_app(cache=cache)
+    accounts = cca.get_accounts()
+    if accounts:  # So all account(s) belong to the current signed-in user
+        result = cca.acquire_token_silent(scope, account=accounts[0])
+        _save_cache(cache)
+        return result
 
 @bp.route("/login_password", methods=["GET", "POST"])
 def login_with_password():
