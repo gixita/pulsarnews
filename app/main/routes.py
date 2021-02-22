@@ -375,6 +375,12 @@ def upvote_comment(comment_id):
     return redirect(redirect_url())
 import os
 
+
+@bp.route("/config")
+def config():
+    return render_template(
+        "config.html",
+    )
 # @bp.route("/init_mail_providers", methods=["GET"])
 # def init_mail_providers():
 #     print(os.getcwd())
