@@ -17,12 +17,29 @@ class Config(object):
     MAIL_USE_TLS = os.environ.get("MAIL_USE_TLS") is not None
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
-    SES_EMAIL_SOURCE = os.environ.get("SES_EMAIL_SOURCE")
-    SES_REGION_NAME = os.environ.get("SES_REGION")
-    AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
     POSTS_PER_PAGE = 50
     TOTAL_POSTS = 100
     USER_POSTS_PER_DAY = 20000000
     USER_COMMENTS_PER_DAY = 15
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
+    WTF_CSRF_ENABLED = True
+
+    #Azure auth
+    TENANT = os.environ.get('TENANT')
+    RESOURCE = os.environ.get('RESOURCE')
+    CLIENT_ID = os.environ.get('CLIENT_ID')
+    CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
+    CALLBACK_PATH = '/auth/signin-oidc'
+    HTTPS_SCHEME = 'http'
+    AUTHORITY = os.environ.get('AUTHORITY')
+    REDIRECT_PATH = os.environ.get('REDIRECT_PATH')
+    ENDPOINT = os.environ.get('ENDPOINT')
+    SCOPE = [os.environ.get('SCOPE')]
+    SESSION_TYPE = "filesystem" 
+    
+    AuthenticationConfig = {
+        "TENANT": TENANT,
+        "CLIENT_ID": CLIENT_ID,
+        "CLIENT_SECRET": CLIENT_SECRET,
+        "HTTPS_SCHEME": HTTPS_SCHEME
+    }

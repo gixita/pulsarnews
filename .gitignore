@@ -1,5 +1,6 @@
 .flaskenv
 app.db
+app-test.db
 .vscode
 logs
 .env
@@ -7,3 +8,4 @@ migrations
 __pycache__
 venv
 app.__pycache__
+aad.config.json
