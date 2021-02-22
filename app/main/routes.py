@@ -377,6 +377,8 @@ import os
 
 
 @bp.route("/config")
+@bp.route("/privacy")
+@bp.route("/termsofuse")
 def config():
     return render_template(
         "config.html",
