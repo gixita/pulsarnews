@@ -23,7 +23,7 @@ class Controller:
         return request.args.get("next") or request.referrer or url_for(default)
 
 
-    def index(search_terms='', current_page = 1):
+    def index(search_terms='', current_page = 1, subdomain='www'):
         if search_terms is None:
             posts_to_update = ( Post.query.filter_by(company_id=current_user.company_id, deleted=0)
                                 .order_by(Post.timestamp.desc())
@@ -54,11 +54,11 @@ class Controller:
         start_rank_num = current_app.config["POSTS_PER_PAGE"] * (page - 1) + 1
         if search_terms is None:
             next_url = (
-                url_for("main.index", page=posts.next_num) if posts.has_next else None
+                url_for("main.index", subdomain=subdomain, page=posts.next_num) if posts.has_next else None
             )
         else:
             next_url = (
-                url_for("main.index", page=posts.next_num, q=search_terms) if posts.has_next else None
+                url_for("main.index", subdomain=subdomain, page=posts.next_num, q=search_terms) if posts.has_next else None
             )
         return [posts.items,
             next_url,
