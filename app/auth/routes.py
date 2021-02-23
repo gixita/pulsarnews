@@ -22,10 +22,10 @@ from app.main.invitation import verify_invitation_token
 import msal
 
 @bp.route("/login", methods=["GET", "POST"])
-def login():
+def login(subdomain='www'):
     flash("This is an alpha version and could be unstable", "warning")
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", subdomain=subdomain))
     form = LoginEmailForm()
     if form.validate_on_submit():
         mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
@@ -34,14 +34,15 @@ def login():
             # TODO check domain if company have an account
             if user is None:
                 flash("You don't have an account yet", "warning")
-                return redirect(url_for("auth.register", email=form.email.data))
+                return redirect(url_for("auth.register", subdomain=subdomain, email=form.email.data))
             else:
                 formPassword = LoginPasswordForm(email = form.email.data)
-                return redirect(url_for("auth.login_with_password", email=form.email.data))
+                return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
                 #return render_template("auth/login_password.html", title="Sign In", form=formPassword)
         else:
             flash("Only corporate account are allowed to connect", "warning")
-    return render_template("auth/login_email.html", title="Sign In", args=request.args.items(), form=form)
+    return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
+
 
 @bp.route("/login_azure")
 def login_azure():
@@ -92,14 +93,14 @@ def _get_token_from_cache(scope=None):
         return result
 
 @bp.route("/login_password", methods=["GET", "POST"])
-def login_with_password():
+def login_with_password(subdomain='www'):
     if current_user.is_authenticated:
         flash("You are already logged in", "warning")
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", subdomain=subdomain))
     email = request.args.get("email")
     if not email:
         flash("Invalid authentication, please enter an email", "error")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login", subdomain=subdomain))
     form = LoginPasswordForm()
     if form.validate_on_submit():
         mail_provider = MailProviders.query.filter_by(domain=email.split('@')[1]).first()
@@ -107,16 +108,16 @@ def login_with_password():
             user = User.query.filter_by(email=email).first()
             if user is None or not user.check_password(form.password.data):
                 flash("Invalid username or password", "warning")
-                return redirect(url_for("auth.login"))
+                return redirect(url_for("auth.login", subdomain=subdomain))
             # TODO in post method already authenticated user can relogin without get the flash message of "you are already looged in"
             login_user(user, remember=True)
             next_page = request.args.get("next")
             if not next_page or url_parse(next_page).netloc != "":
-                next_page = url_for("main.index")
+                next_page = url_for("main.index", subdomain=subdomain)
             return redirect(next_page)
         else:
             flash("Only corporate account are allowed to connect", "warning")
-    return render_template("auth/login_password.html", title="Sign In", form=form)
+    return render_template("auth/login_password.html", subdomain=subdomain, title="Sign In", form=form)
 
 
 @bp.route("/logout")

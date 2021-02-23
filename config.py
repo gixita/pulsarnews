@@ -23,7 +23,8 @@ class Config(object):
     USER_COMMENTS_PER_DAY = 15
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
     WTF_CSRF_ENABLED = True
-
+    SERVER_NAME = os.environ.get("SERVER_NAME")
+    
     #Azure auth
     TENANT = os.environ.get('TENANT')
     RESOURCE = os.environ.get('RESOURCE')

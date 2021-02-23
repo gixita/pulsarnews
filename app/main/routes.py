@@ -52,15 +52,15 @@ def company_required(f):
 @bp.route("/index", methods=["GET"])
 @login_required
 @company_required
-def index():
+def index(subdomain='www'):
     if not current_user.is_authenticated:
-        return redirect(url_for("main.index"))
+        return redirect(url_for("auth.login", subdomain=subdomain))
     search_terms = request.args.get("q")
     if search_terms:
         title = "Search for \""+search_terms+"\""
     else:
         title="Trending"
-    items = Controller.index(search_terms=search_terms)
+    items = Controller.index(search_terms=search_terms, subdomain=subdomain)
     if len(items[0])==0 and not search_terms:
         flash("Welcome, there is no article yet in your company. Submit the first one by clicking the submit button", "success")
     if len(items[0])==0 and search_terms:
@@ -68,6 +68,7 @@ def index():
     
     return render_template(
         "index.html",
+        subdomain=subdomain,
         title=title,
         posts=items[0],
         next_url=items[1],
