@@ -24,8 +24,8 @@ import msal
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
     flash("This is an alpha version and could be unstable", "warning")
-    if current_user.is_authenticated:
-        return redirect(url_for("main.index", subdomain=subdomain))
+    # if current_user.is_authenticated:
+    #     return redirect(url_for("main.index", subdomain=subdomain))
     form = LoginEmailForm()
     if form.validate_on_submit():
         mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
@@ -34,11 +34,10 @@ def login(subdomain='www'):
             # TODO check domain if company have an account
             if user is None:
                 flash("You don't have an account yet", "warning")
-                return redirect(url_for("auth.register", subdomain=subdomain, email=form.email.data))
+                # return redirect(url_for("auth.register", subdomain=subdomain, email=form.email.data))
             else:
                 formPassword = LoginPasswordForm(email = form.email.data)
-                return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
-                #return render_template("auth/login_password.html", title="Sign In", form=formPassword)
+                #return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
         else:
             flash("Only corporate account are allowed to connect", "warning")
     return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
