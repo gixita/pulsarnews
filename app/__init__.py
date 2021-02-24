@@ -11,6 +11,7 @@ import logging
 from flaskext.markdown import Markdown
 from flask_mail import Mail
 from flask_cors import CORS
+from flask_oauthlib.client import OAuth, OAuthException
 
 
 db = SQLAlchemy(model_class=FlaskBaseModel)
@@ -25,7 +26,7 @@ login.blueprint_login_views = {
 login.login_message = ""
 mail = Mail()
 moment = Moment()
-
+oauth = OAuth()
 
 
 def create_app(config_class=Config):
@@ -40,8 +41,10 @@ def create_app(config_class=Config):
     mail.init_app(app)
     moment.init_app(app)
     markdown = Markdown(app)
-    cors = CORS(app)
+    #cors = CORS(app)
+    oauth.init_app(app)
 
+    
     
     from app.errors import bp as errors_bp
 

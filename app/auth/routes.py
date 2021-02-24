@@ -5,7 +5,8 @@ from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 import json
 
-from app import db
+from app import db, oauth
+import uuid
 from app.auth import bp
 from app.auth.forms import (
     LoginEmailForm,
@@ -43,14 +44,57 @@ def login(subdomain='www'):
             flash("Only corporate account are allowed to connect", "warning")
     return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
 
-
 @bp.route("/login_azure")
+def login_azure2(subdomain='www'):
+    microsoft = get_microsoft()
+    if 'microsoft_token' in session:
+        return redirect(url_for('main.index', subdomain=subdomain))
+    # Generate the guid to only accept initiated logins
+    guid = uuid.uuid4()
+    session['state'] = guid
+    return microsoft.authorize(callback=url_for('auth.authorized', subdomain=subdomain, _external=True), state=guid)
+
+@bp.route('/signin-oidc')
+def authorized2(subdomain='www'):
+    response = microsoft.authorized_response()
+    if response is None:
+        return "Access Denied: Reason=%s\nError=%s" % (
+            response.get('error'), 
+            request.get('error_description')
+        )
+    # Check response for state
+    print("Response: " + str(response))
+    if str(session['state']) != str(request.args['state']):
+        raise Exception('State has been messed with, end authentication')
+    # Okay to store this in a local variable, encrypt if it's going to client
+    # machine or database. Treat as a password. 
+    session['microsoft_token'] = (response['access_token'], '')
+    user = User.query.filter_by(id=1).first()
+    login_user(user, remember=True)
+    return redirect(url_for('main.index', subdomain=subdomain)) 
+
+def get_microsoft(subdomain='www'):
+    tenant_name = current_app.config['TENANT']
+    microsoft = oauth.remote_app(
+        'microsoft',
+        consumer_key=current_app.config['CLIENT_ID'],
+        consumer_secret=current_app.config['CLIENT_SECRET'],
+        request_token_params={'scope': 'User.ReadBasic.All'},
+        base_url='https://graph.microsoft.com/v1.0/',
+        request_token_url=None,
+        access_token_method='POST',
+        access_token_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token', tenant=tenant_name),
+        authorize_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize', tenant=tenant_name),
+    )
+    return microsoft
+
+@bp.route("/login_azure2")
 def login_azure(subdomain='www'):
     session.clear()
     session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
     return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
-@bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
+@bp.route("/signin2-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
 def authorized(subdomain='www'):
     try:
         cache = _load_cache()
