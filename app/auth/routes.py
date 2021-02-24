@@ -56,6 +56,7 @@ def login_azure(subdomain='www'):
 
 @bp.route('/signin-oidc')
 def authorized(subdomain='www'):
+    microsoft = get_microsoft()
     response = microsoft.authorized_response()
     if response is None:
         return "Access Denied: Reason=%s\nError=%s" % (
