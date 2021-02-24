@@ -77,7 +77,8 @@ def login_azure(subdomain='www'):
     # Generate the guid to only accept initiated logins
     guid = uuid.uuid4()
     session['state'] = guid
-    return microsoft.authorize(callback=url_for('auth.authorized', subdomain=subdomain, _external=True), state=guid)
+    print(url_for('auth.authorized', _external=True))
+    return microsoft.authorize(callback=url_for('auth.authorized', _external=True), state=guid)
 
 @bp.route('/signin-oidc')
 def authorized(subdomain='www'):

@@ -28,10 +28,10 @@ def redirect_url(default="main.index"):
 
 def company_required(f):
     def wrapper(*args, **kwargs):
-        if kwargs['subdomain']:
-            subdomain = kwargs['subdomain']
-        else:
-            subdomain = 'www'
+        # if kwargs['subdomain']:
+        #     subdomain = kwargs['subdomain']
+        # else:
+        #     subdomain = 'www'
         if current_user.verified == 0 or current_user.verified is None:
             return redirect(url_for('auth.verify_account', subdomain=subdomain))
         if (current_user.company_id == 0 or current_user.company_id == None):
