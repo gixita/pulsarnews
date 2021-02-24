@@ -46,6 +46,7 @@ def login(subdomain='www'):
 
 @bp.route("/login_azure")
 def login_azure(subdomain='www'):
+    session.clear()
     session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
     return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
