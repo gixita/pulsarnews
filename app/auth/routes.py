@@ -22,6 +22,29 @@ from app.auth.email import send_password_reset_email, send_verification_email
 from app.main.invitation import verify_invitation_token
 import msal
 
+class Microsoft:
+    def __init__(self):
+        self.microsoft = None
+        
+    def set_microsoft(self, client_id, tenant_id, client_secret):
+        tenant_name = tenant_id
+        self.microsoft = oauth.remote_app(
+            'microsoft',
+            consumer_key=client_id,
+            consumer_secret=client_secret,
+            request_token_params={'scope': 'User.ReadBasic.All'},
+            base_url='https://graph.microsoft.com/v1.0/',
+            request_token_url=None,
+            access_token_method='POST',
+            access_token_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token', tenant=tenant_name),
+            authorize_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize', tenant=tenant_name),
+        )
+
+    def get_microsoft(self):
+        return self.microsoft
+
+microsoft_app = Microsoft()
+
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
@@ -46,7 +69,8 @@ def login(subdomain='www'):
 
 @bp.route("/login_azure")
 def login_azure(subdomain='www'):
-    microsoft = get_microsoft()
+    microsoft_app.set_microsoft(client_id = current_app.config['CLIENT_ID'], tenant_id=current_app.config['TENANT'], client_secret=current_app.config['CLIENT_SECRET'])
+    microsoft = microsoft_app.get_microsoft()
     if 'microsoft_token' in session:
         return redirect(url_for('main.index', subdomain=subdomain))
     # Generate the guid to only accept initiated logins
@@ -56,8 +80,7 @@ def login_azure(subdomain='www'):
 
 @bp.route('/signin-oidc')
 def authorized(subdomain='www'):
-    microsoft = get_microsoft()
-    response = microsoft.authorized_response()
+    response = microsoft_app.get_microsoft().authorized_response()
     if response is None:
         return "Access Denied: Reason=%s\nError=%s" % (
             response.get('error'), 
@@ -74,20 +97,6 @@ def authorized(subdomain='www'):
     login_user(user, remember=True)
     return redirect(url_for('main.index', subdomain=subdomain)) 
 
-def get_microsoft(subdomain='www'):
-    tenant_name = current_app.config['TENANT']
-    microsoft = oauth.remote_app(
-        'microsoft',
-        consumer_key=current_app.config['CLIENT_ID'],
-        consumer_secret=current_app.config['CLIENT_SECRET'],
-        request_token_params={'scope': 'User.ReadBasic.All'},
-        base_url='https://graph.microsoft.com/v1.0/',
-        request_token_url=None,
-        access_token_method='POST',
-        access_token_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token', tenant=tenant_name),
-        authorize_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize', tenant=tenant_name),
-    )
-    return microsoft
 
 @bp.route("/login_azure2")
 def login_azure2(subdomain='www'):
@@ -327,4 +336,6 @@ def reset_password(subdomain='www'):
         flash("Your password has been reset.", "success")
         return redirect(url_for("auth.login", subdomain=subdomain))
     return render_template("auth/reset_password.html", subdomain=subdomain, title="Reset password", form=form)
+
+
 
