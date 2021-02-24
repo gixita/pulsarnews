@@ -19,7 +19,7 @@ from app.models import Comment, Post, User, Vote, Comment_Vote
 from app.main import bp
 
 class Controller:
-    def redirect_url(default="main.index"):
+    def redirect_url(default="main.index", subdomain='www'):
         return request.args.get("next") or request.referrer or url_for(default, subdomain=subdomain)
 
 
@@ -65,7 +65,7 @@ class Controller:
             start_rank_num,
         ]
 
-    def new():
+    def new(subdomain='www'):
         page = request.args.get("page", 1, type=int)
         posts = (
             Post.query.filter_by(company_id=current_user.company_id, deleted=0)
@@ -113,7 +113,7 @@ class Controller:
             return False
 
 
-    def post_page(post_id):
+    def post_page(post_id, subdomain='www'):
         post = Post.query.filter_by(company_id=current_user.company_id, id=post_id).first_or_404()
 
         comments = (

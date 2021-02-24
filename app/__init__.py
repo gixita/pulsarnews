@@ -15,7 +15,13 @@ from flask_mail import Mail
 db = SQLAlchemy(model_class=FlaskBaseModel)
 migrate = Migrate(compare_type=True)
 login = LoginManager()
-login.login_view = "auth.login"
+#login.login_view = "auth.login"
+login.blueprint_login_views = {
+    'auth': '/auth/login',
+    'main': '/auth/login',
+    'errors': '/auth/login',
+    'admin': '/auth/login',
+}
 login.login_message = ""
 mail = Mail()
 moment = Moment()
@@ -52,10 +58,8 @@ def create_app(config_class=Config):
     app.register_blueprint(api_bp, url_prefix="/api/v1")
 
     from app.main import bp as main_bp
-    from app.main import bp_nosubdomain as main_bp_nosub
 
     app.register_blueprint(main_bp)
-    app.register_blueprint(main_bp_nosub)
 
     if not app.debug:
         if app.config["LOG_TO_STDOUT"]:

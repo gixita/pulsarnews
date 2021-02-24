@@ -21,7 +21,7 @@
     
     </script>
     {% block content %}
-    <a href="{{url_for(main_route+'.config', subdomain=subdomain)}}">Link to privacy</a>
+    <a href="{{url_for('main.config', subdomain=subdomain)}}">Link to privacy</a>
     {% endblock %}
 </body>
 </html>

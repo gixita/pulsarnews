@@ -17,7 +17,7 @@ from app import db
 from app.main.forms import CommentForm, EditProfileForm, PostForm, AddDomainForm
 from app.auth.forms import LoginEmailForm
 from app.models import Comment, Post, User, Vote, Comment_Vote, Domains, MailProviders
-from app.main import bp, bp_nosubdomain
+from app.main import bp
 from app.main.invitation import send_invitation
 
 from app.main.controller import Controller
@@ -83,7 +83,7 @@ def index(subdomain='www'):
 @login_required
 @company_required
 def new(subdomain='www'):
-    items = Controller.new()
+    items = Controller.new(subdomain=subdomain)
     return render_template(
         "index.html", 
         subdomain=subdomain,
@@ -205,7 +205,8 @@ def submit(subdomain='www'):
             db.session.add(post)
             db.session.commit()
             flash("Congratulations, your post was published!", "success")
-            return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
+            #return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
+            return redirect(url_for("main.new", subdomain=subdomain))
         else:
             flash(
                 f"Sorry, you can only post {current_app.config['USER_POSTS_PER_DAY']} times a day", "warning"
@@ -385,23 +386,12 @@ import os
 @bp.route("/config")
 @bp.route("/privacy")
 @bp.route("/termsofuse")
-@bp_nosubdomain.route("/config")
-@bp_nosubdomain.route("/privacy")
-@bp_nosubdomain.route("/termsofuse")
 def config(subdomain=''):
-    main_route = get_main_route(subdomain)
     return render_template(
         "config.html", 
-        main_route=main_route,
         subdomain=subdomain,
     )
 
-
-def get_main_route(subdomain):
-    if subdomain == '':
-        return 'main'
-    else:
-        return 'main_nosubdomain'
 # @bp.route("/init_mail_providers", methods=["GET"])
 # def init_mail_providers():
 #     print(os.getcwd())
