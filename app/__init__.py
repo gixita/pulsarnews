@@ -10,6 +10,7 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flaskext.markdown import Markdown
 from flask_mail import Mail
+from flask_cors import CORS
 
 
 db = SQLAlchemy(model_class=FlaskBaseModel)
@@ -39,6 +40,8 @@ def create_app(config_class=Config):
     mail.init_app(app)
     moment.init_app(app)
     markdown = Markdown(app)
+    cors = CORS(app)
+
     
     from app.errors import bp as errors_bp
 
