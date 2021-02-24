@@ -39,7 +39,7 @@
   <header class="navbar navbar-dark sticky-top bg-custom-blue flex-md-nowrap p-0 shadow">
     <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ url_for('main.index', subdomain=subdomain) }}">
       <img
-      src="{{ url_for('static', filename='pulsarnews-dark.png')}}"
+      src="{{ url_for('static', filename='pulsarnews-dark.png', _external=True)}}"
       style="height: 30px;"
       />
     </a>
@@ -69,24 +69,28 @@
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="{{ url_for('main.index', subdomain=subdomain) }}">
-                <svg class="feather mx-2">
-                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#trending-up"/>
+                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                  <!-- trending-up -->
+                  <polyline xmlns="http://www.w3.org/2000/svg" points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline xmlns="http://www.w3.org/2000/svg" points="17 6 23 6 23 12"/>
                 </svg>
+                
                 Trending
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('main.new', subdomain=subdomain) }}">
-                <svg class="feather mx-2">
-                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#watch"/>
+                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                  <!-- watch -->
+                  <circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="12" r="7"/><polyline xmlns="http://www.w3.org/2000/svg" points="12 9 12 12 13.5 13.5"/><path xmlns="http://www.w3.org/2000/svg" d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/>
                 </svg>
                 Newest
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('main.submit', subdomain=subdomain) }}">
-                <svg class="feather mx-2">
-                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#plus"/>
+                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                  <!-- plus -->
+                  <line xmlns="http://www.w3.org/2000/svg" x1="12" y1="5" x2="12" y2="19"/><line xmlns="http://www.w3.org/2000/svg" x1="5" y1="12" x2="19" y2="12"/>
                 </svg>
                 Submit a post
               </a>
@@ -98,24 +102,27 @@
           <ul class="nav flex-column">
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="{{ url_for('main.user_submissions', subdomain=subdomain)}}">
-                <svg class="feather mx-2">
-                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#archive"/>
+                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                  <!-- archive -->
+                  <polyline xmlns="http://www.w3.org/2000/svg" points="21 8 21 21 3 21 3 8"/><rect xmlns="http://www.w3.org/2000/svg" x="1" y="3" width="22" height="5"/><line xmlns="http://www.w3.org/2000/svg" x1="10" y1="12" x2="14" y2="12"/>
                 </svg>
                 My posts
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="{{ url_for('main.user', subdomain=subdomain) }}">
-                <svg class="feather mx-2">
-                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#user"/>
+                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                  <!-- user -->
+                  <path xmlns="http://www.w3.org/2000/svg" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="7" r="4"/>
                 </svg>
                 Edit my profile
               </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" aria-current="page" href="{{ url_for('main.invite_colleague', subdomain=subdomain) }}">
-                <svg class="feather mx-2">
-                  <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#link-2"/>
+                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                  <!-- link-2 -->
+                  <path xmlns="http://www.w3.org/2000/svg" d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"/><line xmlns="http://www.w3.org/2000/svg" x1="8" y1="12" x2="16" y2="12"/>
                 </svg>
                 Invite a colleague
               </a>

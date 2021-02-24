@@ -8,8 +8,9 @@
               <div class="d-flex flex-row mt-2 text-black-50 date-time">
                 <div class="post-info">
                   <a href="{{url_for('main.upvote_comment', subdomain=subdomain, comment_id=comment.id)}}" class="post-info-links">
-                    <svg class="feather feather-color">
-                      <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-up"/>
+                    <svg class="feather feather-color" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                      <!-- arrow-up -->
+                      <line xmlns="http://www.w3.org/2000/svg" x1="12" y1="19" x2="12" y2="5"/><polyline xmlns="http://www.w3.org/2000/svg" points="5 12 12 5 19 12"/>
                     </svg>
                     
                     <span class="ml-2">{{ comment.score }} p<span class="d-none d-md-inline">oints</span></span>
@@ -17,24 +18,27 @@
                 </div>
                 <div class="post-info">
                   
-                  <svg class="feather">
-                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#user"/>
+                  <svg class="feather" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- user -->
+                    <path xmlns="http://www.w3.org/2000/svg" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="7" r="4"/>
                   </svg>
                   <span class="ml-2">{{ comment.author.username }}</span>
                   
                 </div>
                 <div class="post-info">
                   
-                  <svg class="feather">
-                    <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#clock"/>
+                  <svg class="feather" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- clock -->
+                    <circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="12" r="10"/><polyline xmlns="http://www.w3.org/2000/svg" points="12 6 12 12 16 14"/>
                   </svg>
                   <span class="ml-2">{{ moment(comment.timestamp).fromNow() }}</span>
                   
                 </div>
                 <div class="post-info">
                   <a href="{{url_for('main.reply', subdomain=subdomain, comment_id=comment.id)}}" class="post-info-links">
-                    <svg class="feather">
-                      <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#message-square"/>
+                    <svg class="feather" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                      <!-- message-square -->
+                      <path xmlns="http://www.w3.org/2000/svg" d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                     </svg>
                     <span class="d-none d-md-inline">Reply</span></div>
                   </a>
@@ -45,8 +49,9 @@
                 <div class="d-flex flex-column mr-2">
                   <div class="dropdown">
                     <button class="btn btn-sm " type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-                      <svg class="feather">
-                        <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#more-vertical"/>
+                      <svg class="feather" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                        <!-- more-vertical -->
+                        <circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="12" r="1"/><circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="5" r="1"/><circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="19" r="1"/>
                       </svg>
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">

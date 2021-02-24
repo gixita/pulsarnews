@@ -15,7 +15,6 @@ from flask_mail import Mail
 db = SQLAlchemy(model_class=FlaskBaseModel)
 migrate = Migrate(compare_type=True)
 login = LoginManager()
-#login.login_view = "auth.login"
 login.blueprint_login_views = {
     'auth': '/auth/login',
     'main': '/auth/login',
@@ -32,7 +31,7 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     app.config.update(SESSION_TYPE = 'filesystem')
-    
+    #app.url_map.default_subdomain = 'www'
 
     db.init_app(app)
     migrate.init_app(app, db)

@@ -386,10 +386,10 @@ import os
 @bp.route("/config")
 @bp.route("/privacy")
 @bp.route("/termsofuse")
-def config(subdomain=''):
+def config(subdomain='www'):
     return render_template(
         "config.html", 
-        subdomain=subdomain,
+        subdomain=subdomain
     )
 
 # @bp.route("/init_mail_providers", methods=["GET"])

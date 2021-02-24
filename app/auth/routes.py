@@ -46,7 +46,7 @@ def login(subdomain='www'):
 
 @bp.route("/login_azure")
 def login_azure(subdomain='www'):
-    session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'])
+    session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
     return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
 @bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
@@ -58,6 +58,8 @@ def authorized(subdomain='www'):
         if "error" in result:
             return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
         session["user"] = result.get("id_token_claims")
+        user = User.query.filter_by(id=1).first()
+        login_user(user, remember=True)
         _save_cache(cache)
     except ValueError:  # Usually caused by CSRF
         pass  # Simply ignore them
@@ -78,10 +80,11 @@ def _build_msal_app(cache=None, authority=None):
         current_app.config['CLIENT_ID'], authority=authority or current_app.config['AUTHORITY'],
         client_credential=current_app.config['CLIENT_SECRET'], token_cache=cache)
 
-def _build_auth_code_flow(authority=None, scopes=None):
+def _build_auth_code_flow(authority=None, scopes=None, subdomain='www'):
     return _build_msal_app(authority=authority).initiate_auth_code_flow(
         scopes or [],
-        redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
+        #redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
+        redirect_uri='http://localhost:5000/auth/signin-oidc')
 
 def _get_token_from_cache(scope=None):
     cache = _load_cache()  # This web app maintains one cache per session
