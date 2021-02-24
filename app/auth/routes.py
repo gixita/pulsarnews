@@ -45,7 +45,7 @@ def login(subdomain='www'):
     return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
 
 @bp.route("/login_azure")
-def login_azure2(subdomain='www'):
+def login_azure(subdomain='www'):
     microsoft = get_microsoft()
     if 'microsoft_token' in session:
         return redirect(url_for('main.index', subdomain=subdomain))
@@ -55,7 +55,7 @@ def login_azure2(subdomain='www'):
     return microsoft.authorize(callback=url_for('auth.authorized', subdomain=subdomain, _external=True), state=guid)
 
 @bp.route('/signin-oidc')
-def authorized2(subdomain='www'):
+def authorized(subdomain='www'):
     response = microsoft.authorized_response()
     if response is None:
         return "Access Denied: Reason=%s\nError=%s" % (
@@ -89,13 +89,13 @@ def get_microsoft(subdomain='www'):
     return microsoft
 
 @bp.route("/login_azure2")
-def login_azure(subdomain='www'):
+def login_azure2(subdomain='www'):
     session.clear()
     session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
     return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
 @bp.route("/signin2-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
-def authorized(subdomain='www'):
+def authorized2(subdomain='www'):
     try:
         cache = _load_cache()
         result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
