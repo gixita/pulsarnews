@@ -9,16 +9,16 @@ from app.admin.forms import EditUserForm, EditCompanyForm, EditDomainForm, EditP
 def super_admin_required(f):
     def wrapper(*args, **kwargs):
         if current_user.verified == 0 or current_user.verified is None:
-            return redirect(url_for('auth.verify_account'))
+            return redirect(url_for('auth.verify_account', subdomain=subdomain))
         if (current_user.company_id == 0 or current_user.company_id == None):
-            return redirect(url_for("auth.create_company"))
+            return redirect(url_for("auth.create_company", subdomain=subdomain))
         super_admin = Administrator.query.filter_by(user_id=current_user.id).first()
         if super_admin:
             if super_admin.is_admin:
                 return f(*args, **kwargs)
         else:
             flash("You cannot access this section, please move on", "danger")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
     wrapper.__doc__ = f.__doc__
     wrapper.__name__ = f.__name__
     return wrapper
@@ -28,7 +28,7 @@ def super_admin_required(f):
 @bp.route("/index", methods=["GET"])
 @login_required
 @super_admin_required
-def index():
+def index(subdomain='www'):
     dashboard = {}
     dashboard['COMPANIES_ACTIVE'] = Company.query.filter_by(banned=0).count()
     dashboard['COMPANIES_NOTACTIVE'] = Company.query.filter_by(banned=1).count()
@@ -41,23 +41,23 @@ def index():
     dashboard['POSTS_COMMENTS'] = Comment.query.count()
     
     
-    return render_template("admin/dashboard.html", title="Dashboard", dashboard=dashboard)
+    return render_template("admin/dashboard.html", subdomain=subdomain, title="Dashboard", dashboard=dashboard)
 
 @bp.route("/users", methods=["GET"])
 @login_required
 @super_admin_required
-def users():
+def users(subdomain='www'):
     company_id = request.args.get("company_id")
     if company_id:
         users = User.query.filter_by(company_id=company_id).all()
     else:
         users = User.query.all()
-    return render_template("admin/users.html", title="Dashboard - Users", users=users)
+    return render_template("admin/users.html", subdomain=subdomain, title="Dashboard - Users", users=users)
 
 @bp.route("/edit_user/<user_id>", methods=["GET", "POST"])
 @login_required
 @super_admin_required
-def edit_user(user_id):
+def edit_user(user_id, subdomain='www'):
     user = User.query.filter_by(id=user_id).first_or_404()
     form = EditUserForm(user)
     # form.email(disabled=True)
@@ -71,7 +71,7 @@ def edit_user(user_id):
         user.banned = form.banned.data
         db.session.commit()
         flash("Your changes have been saved.", "success")
-        return redirect(url_for("admin.users"))
+        return redirect(url_for("admin.users", subdomain=subdomain))
     elif request.method == "GET":
         form.username.data = user.username
         form.about_me.data = user.about_me
@@ -81,20 +81,20 @@ def edit_user(user_id):
         form.admin.data = user.admin
         form.banned.data = user.banned
     return render_template(
-        "admin/edit_user.html", title="Edit profile", form=form
+        "admin/edit_user.html", subdomain=subdomain, title="Edit profile", form=form
     )
 
 @bp.route("/companies", methods=["GET"])
 @login_required
 @super_admin_required
-def companies():
+def companies(subdomain='www'):
     companies = Company.query.all()
-    return render_template("admin/companies.html", title="Dashboard - Companies", companies=companies)
+    return render_template("admin/companies.html", subdomain=subdomain, title="Dashboard - Companies", companies=companies)
 
 @bp.route("/edit_company/<company_id>", methods=["GET", "POST"])
 @login_required
 @super_admin_required
-def edit_company(company_id):
+def edit_company(company_id, subdomain='www'):
     company = Company.query.filter_by(id=company_id).first_or_404()
     form = EditCompanyForm(company)
     # form.email(disabled=True)
@@ -103,29 +103,29 @@ def edit_company(company_id):
         company.banned = form.banned.data
         db.session.commit()
         flash("Your changes have been saved.", "success")
-        return redirect(url_for("admin.companies"))
+        return redirect(url_for("admin.companies", subdomain=subdomain))
     elif request.method == "GET":
         form.name.data = company.name
         form.banned.data = company.banned
     return render_template(
-        "admin/edit_company.html", title="Edit company", form=form
+        "admin/edit_company.html", subdomain=subdomain, title="Edit company", form=form
     )
 
 @bp.route("/domains", methods=["GET"])
 @login_required
 @super_admin_required
-def domains():
+def domains(subdomain='www'):
     company_id = request.args.get("company_id")
     if company_id:
         domains = Domains.query.filter_by(company_id=company_id).all()
     else:
         domains = Domains.query.all()
-    return render_template("admin/domains.html", title="Dashboard - Domains", domains=domains)
+    return render_template("admin/domains.html", subdomain=subdomain, title="Dashboard - Domains", domains=domains)
 
 @bp.route("/edit_domain/<domain_id>", methods=["GET", "POST"])
 @login_required
 @super_admin_required
-def edit_domain(domain_id):
+def edit_domain(domain_id, subdomain='www'):
     domain = Domains.query.filter_by(id=domain_id).first_or_404()
     form = EditDomainForm(domain)
     # form.email(disabled=True)
@@ -135,30 +135,30 @@ def edit_domain(domain_id):
         domain.company_id = form.company_id.data
         db.session.commit()
         flash("Your changes have been saved.", "success")
-        return redirect(url_for("admin.domains"))
+        return redirect(url_for("admin.domains", subdomain=subdomain))
     elif request.method == "GET":
         form.name.data = domain.name
         form.fully_managed_domain.data = domain.fully_managed_domain
         form.company_id.data = domain.company_id
     return render_template(
-        "admin/edit_domain.html", title="Edit domain", form=form
+        "admin/edit_domain.html", subdomain=subdomain, title="Edit domain", form=form
     )
 
 @bp.route("/posts", methods=["GET"])
 @login_required
 @super_admin_required
-def posts():
+def posts(subdomain='www'):
     company_id = request.args.get("company_id")
     if company_id:
         posts = Post.query.filter_by(company_id=company_id).all()
     else:
         posts = Post.query.all()
-    return render_template("admin/posts.html", title="Dashboard - Posts", posts=posts)
+    return render_template("admin/posts.html", subdomain=subdomain, title="Dashboard - Posts", posts=posts)
 
 @bp.route("/edit_post/<post_id>", methods=["GET", "POST"])
 @login_required
 @super_admin_required
-def edit_post(post_id):
+def edit_post(post_id, subdomain='www'):
     post = Post.query.filter_by(id=post_id).first_or_404()
     form = EditPostForm(post)
     # form.email(disabled=True)
@@ -172,7 +172,7 @@ def edit_post(post_id):
         post.company_id = form.company_id.data
         db.session.commit()
         flash("Your changes have been saved.", "success")
-        return redirect(url_for("admin.posts"))
+        return redirect(url_for("admin.posts", subdomain=subdomain))
     elif request.method == "GET":
         form.title.data = post.title
         form.url.data = post.url
@@ -183,5 +183,5 @@ def edit_post(post_id):
         form.company_id.data = post.company_id
         
     return render_template(
-        "admin/edit_post.html", title="Edit post", form=form
+        "admin/edit_post.html", subdomain=subdomain, title="Edit post", form=form
     )

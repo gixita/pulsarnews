@@ -52,8 +52,10 @@ def create_app(config_class=Config):
     app.register_blueprint(api_bp, url_prefix="/api/v1")
 
     from app.main import bp as main_bp
+    from app.main import bp_nosubdomain as main_bp_nosub
 
     app.register_blueprint(main_bp)
+    app.register_blueprint(main_bp_nosub)
 
     if not app.debug:
         if app.config["LOG_TO_STDOUT"]:

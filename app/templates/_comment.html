@@ -7,7 +7,7 @@
             <div class="d-flex flex-row align-items-center">
               <div class="d-flex flex-row mt-2 text-black-50 date-time">
                 <div class="post-info">
-                  <a href="{{url_for('main.upvote_comment', comment_id=comment.id)}}" class="post-info-links">
+                  <a href="{{url_for('main.upvote_comment', subdomain=subdomain, comment_id=comment.id)}}" class="post-info-links">
                     <svg class="feather feather-color">
                       <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#arrow-up"/>
                     </svg>
@@ -32,7 +32,7 @@
                   
                 </div>
                 <div class="post-info">
-                  <a href="{{url_for('main.reply', comment_id=comment.id)}}" class="post-info-links">
+                  <a href="{{url_for('main.reply', subdomain=subdomain, comment_id=comment.id)}}" class="post-info-links">
                     <svg class="feather">
                       <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#message-square"/>
                     </svg>
@@ -51,11 +51,11 @@
                     </button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                       
-                      <a class="dropdown-item" href="{{url_for('main.upvote_comment', comment_id=comment.id)}}">Upvote</a>
-                      <a class="dropdown-item" href="{{url_for('main.reply', comment_id=comment.id)}}">Reply</a>
+                      <a class="dropdown-item" href="{{url_for('main.upvote_comment', subdomain=subdomain, comment_id=comment.id)}}">Upvote</a>
+                      <a class="dropdown-item" href="{{url_for('main.reply', subdomain=subdomain, comment_id=comment.id)}}">Reply</a>
                       {%if current_user == comment.user_id or current_user.admin == 1 %}
                       <a class="dropdown-item" href="#">Edit</a>
-                      <a class="dropdown-item" href="{{url_for('main.delete_comment', comment_id=comment.id)}}">Delete</a>
+                      <a class="dropdown-item" href="{{url_for('main.delete_comment', subdomain=subdomain, comment_id=comment.id)}}">Delete</a>
                       {% endif %}
                     </div>
                   </div>

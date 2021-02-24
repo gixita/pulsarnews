@@ -18,10 +18,10 @@
             <tr>
                 <td>{{ company.name }}</td>
                 <td>{{ company.banned }}</td>
-                <td><a href="{{ url_for('admin.edit_company', company_id=company.id) }}">Edit</a></td>
-                <td><a href="{{ url_for('admin.posts', company_id=company.id) }}">Posts</a></td>
-                <td><a href="{{ url_for('admin.users', company_id=company.id) }}">Users</a></td>
-                <td><a href="{{ url_for('admin.domains', company_id=company.id) }}">Domains</a></td>
+                <td><a href="{{ url_for('admin.edit_company', subdomain=subdomain, company_id=company.id) }}">Edit</a></td>
+                <td><a href="{{ url_for('admin.posts', subdomain=subdomain, company_id=company.id) }}">Posts</a></td>
+                <td><a href="{{ url_for('admin.users', subdomain=subdomain, company_id=company.id) }}">Users</a></td>
+                <td><a href="{{ url_for('admin.domains', subdomain=subdomain, company_id=company.id) }}">Domains</a></td>
             </tr>
             {% endfor %}
         </tbody>

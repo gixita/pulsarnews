@@ -37,7 +37,7 @@
 <body class="my-font bg-light">
   
   <header class="navbar navbar-dark sticky-top bg-custom-blue flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ url_for('main.index') }}">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ url_for('main.index', subdomain=subdomain) }}">
       <img
       src="{{ url_for('static', filename='pulsarnews-dark.png')}}"
       style="height: 30px;"
@@ -51,7 +51,7 @@
     </form>
     <ul class="navbar-nav px-3">
       <li class="nav-item text-nowrap">
-        <a class="nav-link" href="{{ url_for('auth.logout') }}">Sign out</a>
+        <a class="nav-link" href="{{ url_for('auth.logout', subdomain=subdomain) }}">Sign out</a>
       </li>
     </ul>
   </header>
@@ -68,7 +68,7 @@
           </h6>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.index') }}">
+              <a class="nav-link" aria-current="page" href="{{ url_for('main.index', subdomain=subdomain) }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#trending-up"/>
                 </svg>
@@ -76,7 +76,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.new') }}">
+              <a class="nav-link" href="{{ url_for('main.new', subdomain=subdomain) }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#watch"/>
                 </svg>
@@ -84,7 +84,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.submit') }}">
+              <a class="nav-link" href="{{ url_for('main.submit', subdomain=subdomain) }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#plus"/>
                 </svg>
@@ -97,7 +97,7 @@
           </h6>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.user_submissions')}}">
+              <a class="nav-link" aria-current="page" href="{{ url_for('main.user_submissions', subdomain=subdomain)}}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#archive"/>
                 </svg>
@@ -105,7 +105,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.user') }}">
+              <a class="nav-link" aria-current="page" href="{{ url_for('main.user', subdomain=subdomain) }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#user"/>
                 </svg>
@@ -113,7 +113,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.invite_colleague') }}">
+              <a class="nav-link" aria-current="page" href="{{ url_for('main.invite_colleague', subdomain=subdomain) }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', filename='feather-sprite.svg') }}#link-2"/>
                 </svg>
@@ -128,7 +128,7 @@
           </h6>
           <ul class="nav flex-column">
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.manage_domain') }}">
+              <a class="nav-link" href="{{ url_for('main.manage_domain', subdomain=subdomain) }}">
                 Manage domains
               </a>
             </li>

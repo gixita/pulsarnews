@@ -158,7 +158,7 @@
     
     <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
       <div class="position-sticky pt-3">
-        <a class="navbar-brand nav-link-custom" href="{{ url_for('main.index') }}">PulsarNews</a>
+        <a class="navbar-brand nav-link-custom" href="{{ url_for('main.index', subdomain=subdomain) }}">PulsarNews</a>
         <ul class="nav flex-column">
           <li class="nav-item">
             <a class="nav-link nav-link-custom" aria-current="page" href="{{ url_for('main.index') }}">

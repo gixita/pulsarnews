@@ -20,7 +20,7 @@ from app.main import bp
 
 class Controller:
     def redirect_url(default="main.index"):
-        return request.args.get("next") or request.referrer or url_for(default)
+        return request.args.get("next") or request.referrer or url_for(default, subdomain=subdomain)
 
 
     def index(search_terms='', current_page = 1, subdomain='www'):
@@ -75,7 +75,7 @@ class Controller:
 
         start_rank_num = current_app.config["POSTS_PER_PAGE"] * (page - 1) + 1
         next_url = (
-            url_for("main.new", page=posts.next_num) if posts.has_next else None
+            url_for("main.new", subdomain=subdomain, page=posts.next_num) if posts.has_next else None
         )
 
         return [posts.items,
@@ -134,13 +134,13 @@ class Controller:
                         company_id=current_user.company_id,
                     )
                     comment.save()
-                    return redirect(url_for("main.post_page", post_id=post.id))
+                    return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
                 else:
                     flash(
                         f"You can only commment {current_app.config['USER_COMMENTS_PER_DAY']} times a day."
                     )
             else:
-                return redirect(url_for("auth.login"))
+                return redirect(url_for("auth.login", subdomain=subdomain))
 
         return [post, form, comments]
 

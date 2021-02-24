@@ -16,7 +16,7 @@
         {% endfor %}
         {% if current_user.admin == True %}    
         
-        <p><a class="btn btn-primary btn-lg" type="button" href="{{ url_for('main.add_domain') }}">Add a new domain</a></p>
+        <p><a class="btn btn-primary btn-lg" type="button" href="{{ url_for('main.add_domain', subdomain=subdomain) }}">Add a new domain</a></p>
     </div>
 </div>
 {% endif %}

@@ -4,7 +4,7 @@
 <div class="container">
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
         <div class="text-center">
-            <a href="{{ url_for('main.index') }}">
+            <a href="{{ url_for('main.index', subdomain=subdomain) }}">
                 <img
                 class="mb-4"
                 src="{{ url_for('static', filename='pulsarnews.png')}}"
@@ -14,7 +14,7 @@
             <h1>Account verification</h1>
             Please verify your account by clicking the link in the mail you received in your inbox.
             <br>
-            <a href="{{ url_for('auth.verification_email_request')}}">Resend the link</a>
+            <a href="{{ url_for('auth.verification_email_request', subdomain=subdomain)}}">Resend the link</a>
         </div>
         
         

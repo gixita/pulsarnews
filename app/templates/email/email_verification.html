@@ -53,7 +53,7 @@
 <body class="body-style">
     <p class="title">PulsarNews.io</p><br><br>
     <p>Start using PulsarNews.io, just click the <b>verify email</b> button bellow</p><br>
-    <a href="{{ url_for('auth.verify_account', token=token, _external=True) }}" class="button button1">Verify account</a><br>
+    <a href="{{ url_for('auth.verify_account', subdomain=subdomain, token=token, _external=True) }}" class="button button1">Verify account</a><br>
     <p class="small">If you are not the requester, just ignore this message.</p>
     <hr>
     <p class="small footnote">PulsarNews.io is a private tool for your company to share links and articles. Sharing is caring.</p>

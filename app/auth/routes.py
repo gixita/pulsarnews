@@ -24,8 +24,8 @@ import msal
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
     flash("This is an alpha version and could be unstable", "warning")
-    # if current_user.is_authenticated:
-    #     return redirect(url_for("main.index", subdomain=subdomain))
+    if current_user.is_authenticated:
+        return redirect(url_for("main.index", subdomain=subdomain))
     form = LoginEmailForm()
     if form.validate_on_submit():
         mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
@@ -34,33 +34,33 @@ def login(subdomain='www'):
             # TODO check domain if company have an account
             if user is None:
                 flash("You don't have an account yet", "warning")
-                # return redirect(url_for("auth.register", subdomain=subdomain, email=form.email.data))
+                return redirect(url_for("auth.register", subdomain=subdomain, email=form.email.data))
             else:
                 formPassword = LoginPasswordForm(email = form.email.data)
-                #return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
+                return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
         else:
             flash("Only corporate account are allowed to connect", "warning")
     return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
 
 
 @bp.route("/login_azure")
-def login_azure():
+def login_azure(subdomain='www'):
     session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'])
-    return render_template("auth/login_azure.html", auth_url=session["flow"]["auth_uri"], version=msal.__version__)
+    return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
 @bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
-def authorized():
+def authorized(subdomain='www'):
     try:
         cache = _load_cache()
         result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
             session.get("flow", {}), request.args)
         if "error" in result:
-            return render_template("auth/auth_error.html", result=result)
+            return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
         session["user"] = result.get("id_token_claims")
         _save_cache(cache)
     except ValueError:  # Usually caused by CSRF
         pass  # Simply ignore them
-    return redirect(url_for("main.index"))
+    return redirect(url_for("main.index", subdomain=subdomain))
 
 def _load_cache():
     cache = msal.SerializableTokenCache()
@@ -80,7 +80,7 @@ def _build_msal_app(cache=None, authority=None):
 def _build_auth_code_flow(authority=None, scopes=None):
     return _build_msal_app(authority=authority).initiate_auth_code_flow(
         scopes or [],
-        redirect_uri=url_for("auth.authorized", _external=True))
+        redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
 
 def _get_token_from_cache(scope=None):
     cache = _load_cache()  # This web app maintains one cache per session
@@ -120,13 +120,13 @@ def login_with_password(subdomain='www'):
 
 
 @bp.route("/logout")
-def logout():
+def logout(subdomain='www'):
     logout_user()
-    return redirect(url_for("main.index"))
+    return redirect(url_for("auth.login", subdomain=subdomain))
 
 
 @bp.route("/register", methods=["GET", "POST"])
-def register():
+def register(subdomain='www'):
     if current_user.is_authenticated:
         if request.args.get("token") is not None:
             company_id_by_token = verify_invitation_token(request.args.get("token"))
@@ -134,7 +134,7 @@ def register():
             db.session.add(current_user)
             db.session.commit()
             flash('Your account as been added to a new company', 'success')
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", subdomain=subdomain))
     if request.args.get("email"):
         form = RegistrationForm(username=request.args.get("email").split('@')[0], email=request.args.get("email"), current_user=current_user)
     else:
@@ -147,7 +147,7 @@ def register():
         mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
         if mail_provider:
             flash("Only corporate account are allowed to connect", "danger")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login", subdomain=subdomain))
         if request.args.get("token") is not None:
             company_id_by_token = verify_invitation_token(request.args.get("token"))
             user.company_id = company_id_by_token
@@ -159,39 +159,39 @@ def register():
             db.session.add(user)
             db.session.commit()
             login_user(user, remember=True)
-            send_verification_email(current_user)
+            send_verification_email(current_user, subdomain=subdomain)
             flash("Congratulations, you are now a registered user!", "success")
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login", subdomain=subdomain))
         else:
             flash("You have already an account on PulsarNews", "danger")
-    return render_template("auth/register.html", title="Register", form=form)
+    return render_template("auth/register.html", subdomain=subdomain, title="Register", form=form)
 
 
 @bp.route("/reset_password_request", methods=["GET", "POST"])
-def reset_password_request():
+def reset_password_request(subdomain='www'):
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))
+        return redirect(url_for("main.index", subdomain=subdomain))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            send_password_reset_email(user)
+            send_password_reset_email(user, subdomain=subdomain)
         flash("An email with instructions was sent to your address.", "success")
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login", subdomain=subdomain))
     return render_template(
-        "auth/reset_password_request.html", title="Reset Password", form=form
+        "auth/reset_password_request.html", subdomain=subdomain, title="Reset Password", form=form
     )
 
 @bp.route("/send_verification_email_token", methods=["GET", "POST"])
-def verification_email_request():
+def verification_email_request(subdomain='www'):
     if current_user.is_authenticated:
         if not (current_user.verified == 0 or current_user.verified is None):
             flash('Your account is already verified', 'success')
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
         else:
             send_verification_email(current_user)
             flash("An email with instructions was sent to your address.", "success")
-            return redirect(url_for("auth.verify_account"))
+            return redirect(url_for("auth.verify_account", subdomain=subdomain))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -203,36 +203,36 @@ def verification_email_request():
                 flash("Your account is already verified", "success")
         else:
             flash("The email address is incorrect, use a valid email account or create an account.", "danger")        
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login", subdomain=subdomain))
     return render_template(
-        "auth/send_email_verification.html", title="Request email verification token", form=form
+        "auth/send_email_verification.html", subdomain=subdomain, title="Request email verification token", form=form
     )
 
 @bp.route("/verify_account", methods=["GET", "POST"])
-def verify_account():
+def verify_account(subdomain='www'):
     if current_user.is_authenticated:
         if (current_user.verified == 1):
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
     if (request.args.get('token')):
         user = User.verify_mail_token(request.args.get('token'))
         if user:
             if (user.verified == 1):
                 flash("Your account is already verified", "success")
-                return redirect(url_for("main.index"))
+                return redirect(url_for("main.index", subdomain=subdomain))
             else:
                 user.verified = 1
                 db.session.add(user)
                 db.session.commit()
                 flash("Your account is verified, welcome !", "success")
-                return redirect(url_for("main.index"))
+                return redirect(url_for("main.index", subdomain=subdomain))
         else:
             flash('Your verification token is expired or invalid, please click on resend a new link.', 'danger')
-    return render_template("auth/verify_account.html", title="Account verification")
+    return render_template("auth/verify_account.html", subdomain=subdomain, title="Account verification")
 
 @bp.route("/create_company", methods=["GET", "POST"])
-def create_company():
+def create_company(subdomain='www'):
     if not current_user.is_authenticated:
-        return redirect(url_for("auth.login"))
+        return redirect(url_for("auth.login", subdomain=subdomain))
     domain = current_user.email.split('@')[1]
     name = domain.split(".")[0]
     query_domain = Domains.query.filter_by(name=domain).first()
@@ -241,9 +241,9 @@ def create_company():
             current_user.company_id = query_domain.company_id
             db.session.add(current_user)
             db.session.commit()
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
         else:
-            return redirect(url_for("main.invitation_required"))
+            return redirect(url_for("main.invitation_required", subdomain=subdomain))
     form = CreateCompanyForm(name=name, fully_managed_domain=True)
     if form.validate_on_submit():
         company = Company(name=form.name.data)
@@ -256,19 +256,19 @@ def create_company():
         current_user.admin = True
         db.session.commit()
         flash("Congratulations, your company has been registered! You can add other email domains in your profile", "success")
-        return redirect(url_for("main.index"))
-    return render_template("auth/create_company.html", title="Create company", form=form, domain=domain)
+        return redirect(url_for("main.index", subdomain=subdomain))
+    return render_template("auth/create_company.html", subdomain=subdomain, title="Create company", form=form, domain=domain)
 
 
 
 @bp.route("/reset_password/", methods=["GET", "POST"])
-def reset_password():
+def reset_password(subdomain='www'):
     token = request.args.get("token")
     if token:
         user = User.verify_reset_password_token(token)
         if not user:
             flash("Your token is not valid or expired, request a new one from the login page", "danger")
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
     if current_user.is_authenticated:
         user = current_user
     form = ResetPasswordForm()
@@ -276,6 +276,6 @@ def reset_password():
         user.set_password(form.password.data)
         db.session.commit()
         flash("Your password has been reset.", "success")
-        return redirect(url_for("auth.login"))
-    return render_template("auth/reset_password.html", title="Reset password", form=form)
+        return redirect(url_for("auth.login", subdomain=subdomain))
+    return render_template("auth/reset_password.html", subdomain=subdomain, title="Reset password", form=form)
 

@@ -17,19 +17,23 @@ from app import db
 from app.main.forms import CommentForm, EditProfileForm, PostForm, AddDomainForm
 from app.auth.forms import LoginEmailForm
 from app.models import Comment, Post, User, Vote, Comment_Vote, Domains, MailProviders
-from app.main import bp
+from app.main import bp, bp_nosubdomain
 from app.main.invitation import send_invitation
 
 from app.main.controller import Controller
 
 @login_required
 def redirect_url(default="main.index"):
-    return request.args.get("next") or request.referrer or url_for(default)
+    return request.args.get("next") or request.referrer or url_for(default, subdomain=subdomain)
 
 def company_required(f):
     def wrapper(*args, **kwargs):
+        if kwargs['subdomain']:
+            subdomain = kwargs['subdomain']
+        else:
+            subdomain = 'www'
         if current_user.verified == 0 or current_user.verified is None:
-            return redirect(url_for('auth.verify_account'))
+            return redirect(url_for('auth.verify_account', subdomain=subdomain))
         if (current_user.company_id == 0 or current_user.company_id == None):
             domain = Domains.query.filter_by(name=current_user.email.split('@')[1]).first()
             if domain is not None:
@@ -38,8 +42,8 @@ def company_required(f):
                     db.session.add(current_user)
                     db.session.commit()
                 else:
-                    return redirect(url_for("main.invitation_required"))
-            return redirect(url_for("auth.create_company"))
+                    return redirect(url_for("main.invitation_required", subdomain=subdomain))
+            return redirect(url_for("auth.create_company", subdomain=subdomain))
         else:
             return f(*args, **kwargs)
     wrapper.__doc__ = f.__doc__
@@ -78,10 +82,11 @@ def index(subdomain='www'):
 @bp.route("/newest", methods=["GET"])
 @login_required
 @company_required
-def new():
+def new(subdomain='www'):
     items = Controller.new()
     return render_template(
-        "index.html",
+        "index.html", 
+        subdomain=subdomain,
         title="Newest",
         posts=items[0],
         next_url=items[1],
@@ -90,23 +95,23 @@ def new():
 
 @bp.route("/invitation_required", methods=["GET"])
 @login_required
-def invitation_required():
-    return render_template("invitation_required.html")
+def invitation_required(subdomain='www'):
+    return render_template("invitation_required.html", subdomain=subdomain)
 
 
 @bp.route("/user", methods=["GET"])
 @login_required
 @company_required
-def user():
+def user(subdomain='www'):
     
     return render_template(
-        "user.html", user=current_user, title=f"Profile: {current_user.username}"
+        "user.html", subdomain=subdomain, user=current_user, title=f"Profile: {current_user.username}"
     )
 
 @bp.route("/edit_profile", methods=["GET", "POST"])
 @login_required
 @company_required
-def edit_profile():
+def edit_profile(subdomain='www'):
     form = EditProfileForm(current_user.username)
     # form.email(disabled=True)
     if form.validate_on_submit():
@@ -114,22 +119,22 @@ def edit_profile():
         current_user.about_me = form.about_me.data
         db.session.commit()
         flash("Your changes have been saved.", "success")
-        return redirect(url_for("main.user"))
+        return redirect(url_for("main.user", subdomain=subdomain))
     elif request.method == "GET":
         form.username.data = current_user.username
         form.about_me.data = current_user.about_me
         # form.email.data = current_user.email
     return render_template(
-        "edit_profile.html", title="Edit profile", form=form
+        "edit_profile.html", subdomain=subdomain, title="Edit profile", form=form
     )
 
 @bp.route("/add_domain", methods=["GET", "POST"])
 @login_required
 @company_required
-def add_domain():
+def add_domain(subdomain='www'):
     if not current_user.admin:
         flash("You are not admin of your company account, you cannot modify the authenication settings", "danger")
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index', subdomain=subdomain))
     else:
         form = AddDomainForm(fully_managed_domain=True)
         if form.validate_on_submit():
@@ -140,24 +145,24 @@ def add_domain():
                 db.session.add(domain)
                 db.session.commit()
                 flash("You add a new domain to your company", "success")
-                return redirect(url_for("main.index"))
+                return redirect(url_for("main.index", subdomain=subdomain))
             else:
                 flash("The domain is already in your list", "warning")
-        return render_template("add_domain.html", title="Add your company mail domain", form=form)
+        return render_template("add_domain.html", subdomain=subdomain, title="Add your company mail domain", form=form)
 
 @bp.route("/manage_domain", methods=["GET", "POST"])
 @login_required
 @company_required
-def manage_domain():
+def manage_domain(subdomain='www'):
     domains = Domains.query.filter_by(company_id=current_user.company_id).all()
     return render_template(
-        "manage_domain.html", title="Manage domain", domains=domains
+        "manage_domain.html", subdomain=subdomain, title="Manage domain", domains=domains
     )
 
 @bp.route("/invite_colleague", methods=["GET", "POST"])
 @login_required
 @company_required
-def invite_colleague():
+def invite_colleague(subdomain='www'):
     form = LoginEmailForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
@@ -174,18 +179,18 @@ def invite_colleague():
             else:
                 send_invitation(current_user, form.email.data)
                 flash("You invited a colleague", "success")
-                return redirect(url_for("main.index"))
+                return redirect(url_for("main.index", subdomain=subdomain))
         else:
             flash('You cannot add a user with a email that is not registered as your company', 'warning')
         
     return render_template(
-        "invite_colleague.html", title="Invite a colleague", form=form
+        "invite_colleague.html", subdomain=subdomain, title="Invite a colleague", form=form
     )
 
 @bp.route("/submit", methods=["GET", "POST"])
 @login_required
 @company_required
-def submit():
+def submit(subdomain='www'):
     form = PostForm()
     if form.validate_on_submit():
         if current_user.can_post():
@@ -200,25 +205,25 @@ def submit():
             db.session.add(post)
             db.session.commit()
             flash("Congratulations, your post was published!", "success")
-            return redirect(url_for("main.post_page", post_id=post.id))
+            return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
         else:
             flash(
                 f"Sorry, you can only post {current_app.config['USER_POSTS_PER_DAY']} times a day", "warning"
             )
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
 
-    return render_template("submit.html", title="Submit", form=form)
+    return render_template("submit.html", subdomain=subdomain, title="Submit", form=form)
 
 @bp.route("/edit_post/<post_id>", methods=["GET", "POST"])
 @login_required
 @company_required
-def edit_post(post_id):
+def edit_post(post_id,subdomain='www'):
     
     post = Post.query.filter_by(company_id=current_user.company_id, id=post_id).first_or_404()
     form = PostForm(title=post.title, url=post.url, text=post.text)
     if current_user != post.author:
         flash("Sorry, you can only modify your own posts", "warning")
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.index', subdomain=subdomain))
     if form.validate_on_submit():
         if current_user == post.author:
             post.title=form.title.data
@@ -228,19 +233,19 @@ def edit_post(post_id):
             db.session.add(post)
             db.session.commit()
             flash("Congratulations, your post was edited!", "success")
-            return redirect(url_for("main.post_page", post_id=post.id))
+            return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
         else:
             flash(
                 f"Sorry, you can only modify your own posts", "warning"
             )
-            return redirect(url_for("main.index"))
+            return redirect(url_for("main.index", subdomain=subdomain))
 
-    return render_template("submit.html", title="Edit post", form=form)
+    return render_template("submit.html", subdomain=subdomain, title="Edit post", form=form)
 
 @bp.route("/post/<post_id>", methods=["GET", "POST"])
 @login_required
 @company_required
-def post_page(post_id):
+def post_page(post_id,subdomain='www'):
     post = Post.query.filter_by(company_id=current_user.company_id, deleted=0, id=post_id).first_or_404()
 
     comments = (
@@ -262,22 +267,22 @@ def post_page(post_id):
                 )
                 comment.save()
                 flash("Your comment is published", "success")
-                return redirect(url_for("main.post_page", post_id=post.id))
+                return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
             else:
                 flash(
                     f"You can only commment {current_app.config['USER_COMMENTS_PER_DAY']} times a day.", "warning"
                 )
         else:
-            return redirect(url_for("auth.login"))
+            return redirect(url_for("auth.login", subdomain=subdomain))
 
     return render_template(
-        "post.html", post=post, form=form, comments=comments, title=post.title
+        "post.html", subdomain=subdomain, post=post, form=form, comments=comments, title=post.title
     )
     
 @bp.route("/upvote/<post_id>", methods=["GET"])
 @login_required
 @company_required
-def upvote(post_id):
+def upvote(post_id,subdomain='www'):
     post_to_upvote = Post.query.filter_by(company_id=current_user.company_id, id=post_id).first_or_404()
     vote_query = Vote.query.filter_by(
         user_id=current_user.id, post_id=post_to_upvote.id
@@ -298,45 +303,45 @@ def upvote(post_id):
 @bp.route("/delete/post/<post_id>", methods=["GET"])
 @login_required
 @company_required
-def delete_post(post_id):
+def delete_post(post_id,subdomain='www'):
     post = Post.query.filter_by(company_id=current_user.company_id, id=post_id).first_or_404()
     if current_user == post.author or current_user.admin == 1:
         post.delete_post()
         db.session.commit()
         return redirect(redirect_url())
     else:
-        return render_template("404.html"), 404
+        return render_template("404.html", subdomain=subdomain), 404
 
 
 @bp.route("/delete/comment/<comment_id>", methods=["GET"])
 @login_required
 @company_required
-def delete_comment(comment_id):
+def delete_comment(comment_id,subdomain='www'):
     comment = Comment.query.filter_by(company_id=current_user.company_id, id=comment_id).first_or_404()
     if current_user == comment.author or current_user.admin == 1:
         comment.text = "[Deleted]"
         db.session.commit()
         return redirect(redirect_url())
     else:
-        return render_template("404.html"), 404
+        return render_template("404.html", subdomain=subdomain), 404
 
 
 @bp.route("/submissions", methods=["GET"])
 @login_required
 @company_required
-def user_submissions():
+def user_submissions(subdomain='www'):
     posts = Post.query.filter_by(company_id=current_user.company_id, author=current_user, deleted=0).order_by(
         Post.timestamp.desc()
     )
     if (len(posts.all())==0):
         flash("You have not post any article yet, submit the first one by clicking on the submit button", "warning")
-    return render_template("index.html", title="My posts", posts=posts)
+    return render_template("index.html", subdomain=subdomain, title="My posts", posts=posts)
 
 
 @bp.route("/reply/<comment_id>", methods=["GET", "POST"])
 @login_required
 @company_required
-def reply(comment_id):
+def reply(comment_id,subdomain='www'):
     parent = Comment.query.filter_by(company_id=current_user.company_id, id=comment_id).first_or_404()
     form = CommentForm()
     if form.validate_on_submit():
@@ -350,14 +355,14 @@ def reply(comment_id):
             company_id=current_user.company_id,
         )
         comment.save()
-        return redirect(url_for("main.post_page", post_id=parent.post_id))
-    return render_template("reply.html", comment=parent, form=form)
+        return redirect(url_for("main.post_page", subdomain=subdomain, post_id=parent.post_id))
+    return render_template("reply.html", subdomain=subdomain, comment=parent, form=form)
 
 
 @bp.route("/upvote_comment/<comment_id>", methods=["GET"])
 @login_required
 @company_required
-def upvote_comment(comment_id):
+def upvote_comment(comment_id,subdomain='www'):
     # TODO unvote comment and check if comment is already upvoted
     comment_to_upvote = Comment.query.filter_by(company_id=current_user.company_id, id=comment_id).first_or_404()
     vote_query = Comment_Vote.query.filter_by(
@@ -380,10 +385,23 @@ import os
 @bp.route("/config")
 @bp.route("/privacy")
 @bp.route("/termsofuse")
-def config():
+@bp_nosubdomain.route("/config")
+@bp_nosubdomain.route("/privacy")
+@bp_nosubdomain.route("/termsofuse")
+def config(subdomain=''):
+    main_route = get_main_route(subdomain)
     return render_template(
-        "config.html",
+        "config.html", 
+        main_route=main_route,
+        subdomain=subdomain,
     )
+
+
+def get_main_route(subdomain):
+    if subdomain == '':
+        return 'main'
+    else:
+        return 'main_nosubdomain'
 # @bp.route("/init_mail_providers", methods=["GET"])
 # def init_mail_providers():
 #     print(os.getcwd())
@@ -397,7 +415,7 @@ def config():
 #                 db.session.add(new_mail_provider)
 #                 db.session.commit()
 #                 print(line.strip(), " - added")
-#     return redirect(url_for("main.index"))
+#     return redirect(url_for("main.index", subdomain=subdomain))
 
 # @bp.route("/load_new_data", methods=["GET"])
 # def load_new_data():
@@ -420,5 +438,5 @@ def config():
 #                 post.format_post(line.split(';')[1])
 #                 db.session.add(post)
 #                 db.session.commit()
-#     return redirect(url_for("main.index"))
+#     return redirect(url_for("main.index", subdomain=subdomain))
 

@@ -24,7 +24,7 @@
                 <td>{{ post.score }}</td>
                 <td>{{ post.company_id }}</td>
                 <td>{{ post.deleted }}</td>
-                <td><a href="{{ url_for('admin.edit_post', post_id=post.id) }}">Edit</a></td>
+                <td><a href="{{ url_for('admin.edit_post', subdomain=subdomain, post_id=post.id) }}">Edit</a></td>
             </tr>
             {% endfor %}
         </tbody>
