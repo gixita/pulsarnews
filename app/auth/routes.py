@@ -83,9 +83,8 @@ def _build_msal_app(cache=None, authority=None):
 def _build_auth_code_flow(authority=None, scopes=None, subdomain='www'):
     return _build_msal_app(authority=authority).initiate_auth_code_flow(
         scopes or [],
-        #redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
-        redirect_uri='http://localhost:5000/auth/signin-oidc')
-
+        redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
+        
 def _get_token_from_cache(scope=None):
     cache = _load_cache()  # This web app maintains one cache per session
     cca = _build_msal_app(cache=cache)
