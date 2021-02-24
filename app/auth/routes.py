@@ -71,6 +71,7 @@ def login(subdomain='www'):
 def login_azure(subdomain='www'):
     microsoft_app.set_microsoft(client_id = current_app.config['CLIENT_ID'], tenant_id=current_app.config['TENANT'], client_secret=current_app.config['CLIENT_SECRET'])
     microsoft = microsoft_app.get_microsoft()
+    session.clear()
     if 'microsoft_token' in session:
         return redirect(url_for('main.index', subdomain=subdomain))
     # Generate the guid to only accept initiated logins
