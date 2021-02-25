@@ -67,8 +67,8 @@ def login(subdomain='www'):
             flash("Only corporate account are allowed to connect", "warning")
     return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
 
-@bp.route("/login_azure")
-def login_azure(subdomain='www'):
+@bp.route("/login_azure_old")
+def login_azure_old(subdomain='www'):
     microsoft_app.set_microsoft(client_id = current_app.config['CLIENT_ID'], tenant_id=current_app.config['TENANT'], client_secret=current_app.config['CLIENT_SECRET'])
     microsoft = microsoft_app.get_microsoft()
     session.clear()
@@ -80,8 +80,18 @@ def login_azure(subdomain='www'):
     print(url_for('auth.authorized', subdomain=subdomain, _external=True))
     return microsoft.authorize(callback=url_for('auth.authorized', subdomain=subdomain, _external=True), state=guid)
 
+@bp.route("/login_azure")
+def login_azure(subdomain='www'):
+    client_id = current_app.config['CLIENT_ID']
+    return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, args=request.args.items())
+
 @bp.route('/signin-oidc')
 def authorized(subdomain='www'):
+    client_id = current_app.config['CLIENT_ID']
+    return render_template("auth/login_authorized_azure.html", title="Authorized", subdomain=subdomain, client_id=client_id, args=request.args.items())
+
+@bp.route('/signin-oidc-old')
+def authorized_old(subdomain='www'):
     response = microsoft_app.get_microsoft().authorized_response()
     if response is None:
         return "Access Denied: Reason=%s\nError=%s" % (

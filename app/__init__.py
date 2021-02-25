@@ -1,4 +1,5 @@
 from flask import Flask
+
 from config import Config
 from flask_sqlalchemy import SQLAlchemy
 from sqlathanor import FlaskBaseModel, initialize_flask_sqlathanor
@@ -44,7 +45,7 @@ def create_app(config_class=Config):
     #cors = CORS(app)
     oauth.init_app(app)
 
-    
+    # TODO manage themes (dark, ...)
     
     from app.errors import bp as errors_bp
 
@@ -88,6 +89,7 @@ def create_app(config_class=Config):
 
             app.logger.setLevel(logging.INFO)
             app.logger.info("Flasknews startup")
+
 
     return app
 
