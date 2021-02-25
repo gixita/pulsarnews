@@ -119,18 +119,20 @@ def login_azure2(subdomain='www'):
 
 @bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
 def authorized2(subdomain='www'):
-    try:
-        cache = _load_cache()
-        result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
-            session.get("flow", {}), request.args)
-        if "error" in result:
-            return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
-        session["user"] = result.get("id_token_claims")
-        user = User.query.filter_by(id=1).first()
-        login_user(user, remember=True)
-        _save_cache(cache)
-    except ValueError:  # Usually caused by CSRF
-        pass  # Simply ignore them
+    user = User.query.filter_by(id=1).first()
+    login_user(user, remember=True)
+    # try:
+    #     cache = _load_cache()
+    #     result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
+    #         session.get("flow", {}), request.args)
+    #     if "error" in result:
+    #         return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
+    #     session["user"] = result.get("id_token_claims")
+    #     user = User.query.filter_by(id=1).first()
+    #     login_user(user, remember=True)
+    #     _save_cache(cache)
+    # except ValueError:  # Usually caused by CSRF
+    #     pass  # Simply ignore them
     return redirect(url_for("main.index", subdomain=subdomain))
 
 def _load_cache():
