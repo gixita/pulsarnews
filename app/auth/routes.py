@@ -86,9 +86,11 @@ def login_azure(subdomain='www'):
     tenant_id = tenant_id=current_app.config['TENANT']
     return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, args=request.args.items())
 
-@bp.route('/signin-oidc-render')
+@bp.route('/signin-oidc')
 def authorized(subdomain='www'):
     client_id = current_app.config['CLIENT_ID']
+    user = User.query.filter_by(id=1).first()
+    login_user(user, remember=True)
     return render_template("auth/login_authorized_azure.html", title="Authorized", subdomain=subdomain, client_id=client_id, args=request.args.items())
 
 @bp.route('/signin-oidc-old')
@@ -117,22 +119,20 @@ def login_azure2(subdomain='www'):
     session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
     return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
-@bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
+@bp.route("/signin2-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
 def authorized2(subdomain='www'):
-    user = User.query.filter_by(id=1).first()
-    login_user(user, remember=True)
-    # try:
-    #     cache = _load_cache()
-    #     result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
-    #         session.get("flow", {}), request.args)
-    #     if "error" in result:
-    #         return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
-    #     session["user"] = result.get("id_token_claims")
-    #     user = User.query.filter_by(id=1).first()
-    #     login_user(user, remember=True)
-    #     _save_cache(cache)
-    # except ValueError:  # Usually caused by CSRF
-    #     pass  # Simply ignore them
+    try:
+        cache = _load_cache()
+        result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
+            session.get("flow", {}), request.args)
+        if "error" in result:
+            return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
+        session["user"] = result.get("id_token_claims")
+        user = User.query.filter_by(id=1).first()
+        login_user(user, remember=True)
+        _save_cache(cache)
+    except ValueError:  # Usually caused by CSRF
+        pass  # Simply ignore them
     return redirect(url_for("main.index", subdomain=subdomain))
 
 def _load_cache():
