@@ -86,7 +86,7 @@ def login_azure(subdomain='www'):
     tenant_id = tenant_id=current_app.config['TENANT']
     return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, args=request.args.items())
 
-@bp.route('/signin-oidc')
+@bp.route('/signin-oidc-render')
 def authorized(subdomain='www'):
     client_id = current_app.config['CLIENT_ID']
     return render_template("auth/login_authorized_azure.html", title="Authorized", subdomain=subdomain, client_id=client_id, args=request.args.items())
@@ -117,7 +117,7 @@ def login_azure2(subdomain='www'):
     session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
     return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
 
-@bp.route("/signin2-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
+@bp.route("/signin-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
 def authorized2(subdomain='www'):
     try:
         cache = _load_cache()
