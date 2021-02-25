@@ -91,6 +91,19 @@ def authorized(subdomain='www'):
     client_id = current_app.config['CLIENT_ID']
     user = User.query.filter_by(id=1).first()
     login_user(user, remember=True)
+    my_request = request.args
+    try:
+        cache = _load_cache()
+        result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
+            session.get("flow", {}), request.args)
+        if "error" in result:
+            return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
+        session["user"] = result.get("id_token_claims")
+        user = User.query.filter_by(id=1).first()
+        login_user(user, remember=True)
+        _save_cache(cache)
+    except ValueError:  # Usually caused by CSRF
+        pass  # Simply ignore them
     return render_template("auth/login_authorized_azure.html", title="Authorized", subdomain=subdomain, client_id=client_id, args=request.args.items())
 
 @bp.route('/signin-oidc-old')

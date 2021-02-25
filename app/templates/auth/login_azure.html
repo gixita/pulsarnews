@@ -10,7 +10,8 @@
       // ADAL.js configuration
       let config = {
         clientId: "{{ client_id }}",
-        redirectUri: window.location.origin + "/auth/signin-oidc",
+        //redirectUri: window.location.origin + "/auth/signin-oidc",
+        redirectUri: "http://localhost:5000/auth/signin-oidc",
         cacheLocation: "localStorage",
         endpoints: {
           "https://graph.microsoft.com": "https://graph.microsoft.com"
