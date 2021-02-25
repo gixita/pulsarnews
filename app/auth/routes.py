@@ -83,7 +83,8 @@ def login_azure_old(subdomain='www'):
 @bp.route("/login_azure")
 def login_azure(subdomain='www'):
     client_id = current_app.config['CLIENT_ID']
-    return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, args=request.args.items())
+    tenant_id = tenant_id=current_app.config['TENANT']
+    return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, args=request.args.items())
 
 @bp.route('/signin-oidc')
 def authorized(subdomain='www'):
