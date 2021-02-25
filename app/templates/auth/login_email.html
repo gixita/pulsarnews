@@ -1,80 +1,34 @@
 {% extends "core.html" %}
 
 {% block content %}
-<script src="https://code.jquery.com/jquery-3.1.1.js" crossorigin="anonymous"></script>
-<script src="https://statics.teams.cdn.office.net/sdk/v1.6.0/js/MicrosoftTeams.min.js"  crossorigin="anonymous"></script>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://statics.teams.microsoft.com/sdk/v1.7.0/js/MicrosoftTeams.js"></script>
+
+
+<script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.15/js/adal.min.js" integrity="sha384-lIk8T3uMxKqXQVVfFbiw0K/Nq+kt1P3NtGt/pNexiDby2rKU6xnDY8p16gIwKqgI" crossorigin="anonymous"></script>
 <script type="text/javascript">
-    microsoftTeams.initialize();
-    // Login to Azure AD and get access to Microsoft Graph
-    function login() {
-        hideProfileAndError(); 
-        microsoftTeams.authentication.authenticate({
-            url: window.location.origin + "/auth/login_azure",
-            width: 600,
-            height: 535,
-            successCallback: function (result) {
-                console.log("Login succeeded: " + result);
-                getUserProfile(result.accessToken);
-            },
-            failureCallback: function (reason) {
-                console.log("Login failed: " + reason);
-                handleAuthError(reason);
-            }
-        });
-    }
-    // Login to Azure AD and get access to Microsoft Graph
-    function loginV2() {
-        hideProfileAndError(); 
-        microsoftTeams.authentication.authenticate({
-            url: window.location.origin + "/auth/login_azurev2",
-            width: 600,
-            height: 535,
-            successCallback: function (result) {
-                console.log("Login succeeded: " + result);
-                getUserProfile(result.accessToken);
-            },
-            failureCallback: function (reason) {
-                console.log("Login failed: " + reason);
-                handleAuthError(reason);
-            }
-        });
-    }
-    // Get the user's profile information from Microsoft Graph
-    function getUserProfile(accessToken) {
-        $.ajax({
-            url: "https://graph.microsoft.com/v1.0/me/",
-            beforeSend: function(request) {
-                request.setRequestHeader("Authorization", "Bearer " + accessToken);
-            },
-            success: function (profile) {
-                $("#profileDisplayName").text(profile.displayName);
-                $("#profileJobTitle").text(profile.jobTitle);
-                $("#profileMail").text(profile.mail);
-                $("#profileUpn").text(profile.userPrincipalName);
-                $("#profileObjectId").text(profile.id);
-                $("#divProfile").css({ display: "" });
-                $("#divError").css({ display: "none" });
-            },
-            error: function (xhr, textStatus, errorThrown) {
-                console.log("textStatus: " + textStatus + ", errorThrown:" + errorThrown);
-                $("#divError").text(errorThrown).css({ display: "" });
-                $("#divProfile").css({ display: "none" });
-            },
-        });
-    }
-    // Show error information
-    function handleAuthError(reason) {
-        $("#divError").text(reason).css({ display: "" });
-        $("#divProfile").css({ display: "none" });
-    }
-    // Clear all information in tab
-    function hideProfileAndError() {
-        $("#divError").text("").css({ display: "none" });
-        $("#divProfile").css({ display: "none" });
+    function openWindow() {
+        let url = window.location.origin + "/auth/login_azure"
+        if (window.microsoftTeams) {
+            microsoftTeams.initialize();
+            microsoftTeams.authentication.authenticate({
+                url: url,
+                width: 600,
+                height: 535,
+                successCallback: function (result) {
+                    getUserProfile(result.accessToken);
+                },
+                failureCallback: function (reason) {
+                    handleAuthError(reason);
+                }
+            });
+        }
+        else {
+            window.open(url, "_blank", "width=" + 600 + ", height=" + 535);
+        }
     }
 </script>
-
 <div class="container">
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
         <div class="text-center">
@@ -98,11 +52,19 @@
             </form>
             <a href="{{ url_for('auth.register', subdomain=subdomain) }}">No account yet ?</a><br>
             <a href="{{ url_for('auth.login_azure', subdomain=subdomain) }}">Login with Azure</a><br>
-            <input id = "Double Click here" type = "button" value = "clickme" onclick = "login();" />
+            
             
             {% for arg in args %}
-<p>{{ arg  }}</p>
-{% endfor %}
+            <p>{{ arg  }}</p>
+            {% endfor %}
+            
+            <div class="silent-auth-container">
+                <div class="loading-block" style="display: none;">
+                    <div class="message-title2">Loading...</div>
+                    <div class="loader"></div>
+                </div>
+                <button class="ts-btn ts-btn-primary" id="btnLogin" type="button" onclick="openWindow()" style="display: block;">Log in</button>
+            </div>
         </div>
     </div>
 </div>
