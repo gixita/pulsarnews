@@ -96,7 +96,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('admin.posts') }}">
+              <a class="nav-link" href="{{ url_for('admin.posts', subdomain=subdomain) }}">
                 <svg class="feather mx-2">
                   <use xlink:href="{{ url_for('static', subdomain=subdomain, filename='feather-sprite.svg') }}#plus"/>
                 </svg>
