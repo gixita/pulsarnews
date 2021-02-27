@@ -5,7 +5,7 @@ from flask_login import current_user, login_user, logout_user
 from werkzeug.urls import url_parse
 import json
 
-from app import db, oauth
+from app import db, is_subdomain_enable
 import uuid
 from app.auth import bp
 from app.auth.forms import (
@@ -50,24 +50,13 @@ def login(subdomain='www'):
     if form.validate_on_submit():
 
         # If user is connected normally (www outside Teams), if its domain is fully managed for SSO, redirect to SSO
-        domain = Domains.query.filter_by(name=form.email.data.split('@')[1], fully_managed_domain=1).first()
-        if domain:
-            company = Company.query.filter_by(id=domain.company_id, premium=True).first()
-            if company:
-                tenant = company.tenant
-                sso_credentials = True
-                return render_template(
-                    "auth/login_email.html", 
-                    title="Sign In", 
-                    subdomain=subdomain,
-                    sso_credentials = sso_credentials,
-                    tenant = tenant, 
-                    args=request.args.items(), 
-                    form=form
-                    )
+        tenant = _is_user_or_company_premium_and_fully_managed(form.email.data, form, subdomain, request.args)
+        if tenant != '':
+            return redirect(url_for("auth.login", subdomain=subdomain, tenant=tenant))
+        
         # Check that the user is using an authorized email provider
-        mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
-        if not mail_provider:
+        mail_in_blacklist = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
+        if not mail_in_blacklist:
             user = User.query.filter_by(email=form.email.data).first()
             # If user don't have an account yet, go the registration page
             if user is None:
@@ -199,10 +188,13 @@ def _build_msal_app(cache=None, company=None):
 def _build_auth_code_flow(company=None, subdomain='www'):
     scopes = company.scope.split(',')
     authority = company.authority+company.tenant
+    if is_subdomain_enable:
+        redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True)
+    else:
+        redirect_uri=url_for("auth.authorized", _external=True)
     return _build_msal_app(company=company).initiate_auth_code_flow(
         scopes or [],
-        redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
-        # redirect_uri=url_for("auth.authorized", _external=True))
+        redirect_uri=redirect_uri)
         
 def _get_token_from_cache(scope=None):
     cache = _load_cache()  # This web app maintains one cache per session
@@ -224,8 +216,8 @@ def login_with_password(subdomain='www'):
         return redirect(url_for("auth.login", subdomain=subdomain))
     form = LoginPasswordForm()
     if form.validate_on_submit():
-        mail_provider = MailProviders.query.filter_by(domain=email.split('@')[1]).first()
-        if not mail_provider:
+        mail_in_blacklist = MailProviders.query.filter_by(domain=email.split('@')[1]).first()
+        if not mail_in_blacklist:
             user = User.query.filter_by(email=email).first()
             if user is None or not user.check_password(form.password.data):
                 flash("Invalid username or password", "warning")
@@ -246,7 +238,30 @@ def logout(subdomain='www'):
     logout_user()
     return redirect(url_for("auth.login", subdomain=subdomain))
 
-# TODO Verify that the company have SSO and deactivate register
+# return tenant
+def _is_user_or_company_premium_and_fully_managed(email, form, subdomain, args=None):
+    redirect_to_sso = False
+    
+    # Check that user is in company under SSO
+    user = User.query.filter_by(email=email).first()
+    if user:
+        company = Company.query.filter_by(id=user.company_id, premium=True).first()
+        if company:
+            redirect_to_sso = True
+    else:
+    # if user don't exist, check if the company have SSO and fully manage its current domain
+        domain = Domains.query.filter_by(name=email.split('@')[1], fully_managed_domain=1).first()
+        if domain:
+            company = Company.query.filter_by(id=domain.company_id, premium=True).first()
+            if company:
+                redirect_to_sso = True
+    
+    if redirect_to_sso:
+        return company.tenant
+    else: 
+        return ''
+
+
 @bp.route("/register", methods=["GET", "POST"])
 def register(subdomain='www'):
     if current_user.is_authenticated:
@@ -262,12 +277,17 @@ def register(subdomain='www'):
     else:
         form = RegistrationForm(current_user=current_user)
     if form.validate_on_submit():
+        # Check that the user should not be redirected to login with SSO
+        tenant = _is_user_or_company_premium_and_fully_managed(form.email.data, form, subdomain, request.args)
+        if tenant != '':
+            return redirect(url_for("auth.login", subdomain=subdomain, tenant=tenant))
+
         checkUser = User.query.filter_by(email=form.email.data).first()
         user = User(username=form.username.data, email=form.email.data)
         # TODO the verification of the domain to add the company_id should be done after the email has been verified
         query_domain = Domains.query.filter_by(name=form.email.data.split('@')[1]).first()
-        mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
-        if mail_provider:
+        mail_in_blacklist = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
+        if mail_in_blacklist:
             flash("Only corporate account are allowed to connect", "danger")
             return redirect(url_for("auth.login", subdomain=subdomain))
         

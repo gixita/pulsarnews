@@ -4,7 +4,7 @@ from app.models import Administrator, Company, User, Post, Vote, Comment, Domain
 from app import db
 
 from app.admin import bp
-from app.admin.forms import EditUserForm, EditCompanyForm, EditDomainForm, EditPostForm, AddCompanyForm
+from app.admin.forms import EditUserForm, EditCompanyForm, EditDomainForm, EditPostForm, AddCompanyForm, AddDomainForm
 
 def super_admin_required(f):
     def wrapper(*args, **kwargs):
@@ -178,6 +178,22 @@ def edit_domain(domain_id, subdomain='www'):
         form.company_id.data = domain.company_id
     return render_template(
         "admin/edit_domain.html", subdomain=subdomain, title="Edit domain", form=form
+    )
+
+@bp.route("/add_domain/", methods=["GET", "POST"])
+@login_required
+@super_admin_required
+def add_domain(subdomain='www'):
+    form = AddDomainForm()
+    # form.email(disabled=True)
+    if form.validate_on_submit():
+        domain = Domains(name=form.name.data, fully_managed_domain=form.fully_managed_domain.data, company_id=form.company_id.data)
+        db.session.add(domain)
+        db.session.commit()
+        flash("You added a new domain.", "success")
+        return redirect(url_for("admin.domains", subdomain=subdomain))
+    return render_template(
+        "admin/edit_domain.html", subdomain=subdomain, title="Add domain", form=form
     )
 
 @bp.route("/posts", methods=["GET"])

@@ -8,6 +8,7 @@
     <table class="table">
         <tbody>  
             <tr>
+                <th>ID</th>
                 <th>Name</th>
                 <th>Banned</th>
                 <th>Premium</th>
@@ -18,6 +19,7 @@
             </tr>
             {% for company in companies %} 
             <tr>
+                <td>{{ company.id }}</td>
                 <td>{{ company.name }}</td>
                 <td>{{ company.banned }}</td>
                 <td>{{ company.premium }}</td>

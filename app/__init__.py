@@ -11,9 +11,8 @@ from logging.handlers import RotatingFileHandler
 import logging
 from flaskext.markdown import Markdown
 from flask_mail import Mail
-from flask_cors import CORS
-from flask_oauthlib.client import OAuth, OAuthException
 
+is_subdomain_enable = True
 
 db = SQLAlchemy(model_class=FlaskBaseModel)
 migrate = Migrate(compare_type=True)
@@ -27,23 +26,19 @@ login.blueprint_login_views = {
 login.login_message = ""
 mail = Mail()
 moment = Moment()
-oauth = OAuth()
 
 
 def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     app.config.update(SESSION_TYPE = 'filesystem')
-    #app.url_map.default_subdomain = 'www'
-
+    
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
     mail.init_app(app)
     moment.init_app(app)
     markdown = Markdown(app)
-    #cors = CORS(app)
-    oauth.init_app(app)
 
     # TODO manage themes (dark, ...)
     

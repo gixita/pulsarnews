@@ -205,7 +205,6 @@ def submit(subdomain='www'):
             db.session.add(post)
             db.session.commit()
             flash("Congratulations, your post was published!", "success")
-            #return redirect(url_for("main.post_page", subdomain=subdomain, post_id=post.id))
             return redirect(url_for("main.new", subdomain=subdomain))
         else:
             flash(
@@ -251,7 +250,6 @@ def post_page(post_id,subdomain='www'):
 
     comments = (
         Comment.query.filter_by(company_id=current_user.company_id, post_id=post.id)
-        # .order_by(Comment.thread_timestamp.desc(), Comment.path.asc())
         .order_by(Comment.thread_score.desc(), Comment.path.asc()).all()
     )
     form = CommentForm()

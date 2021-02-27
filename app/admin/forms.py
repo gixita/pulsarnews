@@ -63,6 +63,16 @@ class EditDomainForm(FlaskForm):
         super(EditDomainForm, self).__init__(*args, **kwargs)
         self.original_username = original_username
 
+class AddDomainForm(FlaskForm):
+    name = StringField("Domain name", validators=[DataRequired()])
+    company_id = IntegerField("Company ID", validators=[DataRequired()])
+    fully_managed_domain = BooleanField(label="Is a fully managed domain")
+    submit = SubmitField("Save")
+
+    def __init__(self,  *args, **kwargs):
+        super(AddDomainForm, self).__init__(*args, **kwargs)
+        
+
 class EditPostForm(FlaskForm):
     title = StringField("Title", validators=[DataRequired()])
     url = StringField("URL", validators=[DataRequired()])
