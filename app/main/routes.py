@@ -28,8 +28,7 @@ def redirect_url(default="main.index"):
 
 def company_required(f):
     def wrapper(*args, **kwargs):
-        # TODO check this without error in case you are not in a subdomain
-        if kwargs['subdomain']:
+        if 'subdomain' in kwargs:
             subdomain = kwargs['subdomain']
         else:
             subdomain = 'www'

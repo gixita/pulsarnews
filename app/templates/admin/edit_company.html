@@ -20,6 +20,90 @@
             <span style="color: red;">[{{ error }}]</span>
             {% endfor %}
         </p>
+        <p>
+            {{ form.premium() }} {{ form.premium.label }}<br>
+            {% for error in form.premium.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.subdomain.label }}<br>
+            {{ form.subdomain(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.subdomain.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.type_of_auth.label }}<br>
+            {{ form.type_of_auth(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.type_of_auth.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.tenant.label }}<br>
+            {{ form.tenant(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.tenant.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.client_id.label }}<br>
+            {{ form.client_id(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.client_id.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.client_secret.label }}<br>
+            {{ form.client_secret(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.client_secret.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.resource.label }}<br>
+            {{ form.resource(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.resource.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.callback_path.label }}<br>
+            {{ form.callback_path(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.callback_path.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.authority.label }}<br>
+            {{ form.authority(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.authority.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.redirect_path.label }}<br>
+            {{ form.redirect_path(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.redirect_path.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.endpoint.label }}<br>
+            {{ form.endpoint(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.endpoint.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.scope.label }}<br>
+            {{ form.scope(class="form-control form-control-lg", size=30) }}<br>
+            {% for error in form.scope.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+        </p>
+
         <button class="btn btn-primary btn-lg" type="submit">Save</button>
     </form>
 </div>

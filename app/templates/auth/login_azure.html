@@ -20,7 +20,8 @@
 
       // add extra query parameters Azure AD login request
       //  include scope for OpenID connect and log-in hint by using the current Microsoft Teams logged-in user
-      config.extraQueryParameters = "scope=open+profile";
+      //config.extraQueryParameters = "scope=open+profile";
+      config.extraQueryParameters = "scope={{ scopes }}";
       if (msTeamsContext.upn) {
         config.extraQueryParameters += "&login-hint=" + encodeURIComponent(msTeamsContext.userProfileName);
       }

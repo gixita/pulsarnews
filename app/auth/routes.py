@@ -22,131 +22,162 @@ from app.auth.email import send_password_reset_email, send_verification_email
 from app.main.invitation import verify_invitation_token
 import msal
 
-class Microsoft:
-    def __init__(self):
-        self.microsoft = None
-        
-    def set_microsoft(self, client_id, tenant_id, client_secret):
-        tenant_name = tenant_id
-        self.microsoft = oauth.remote_app(
-            'microsoft',
-            consumer_key=client_id,
-            consumer_secret=client_secret,
-            request_token_params={'scope': 'User.ReadBasic.All'},
-            base_url='https://graph.microsoft.com/v1.0/',
-            request_token_url=None,
-            access_token_method='POST',
-            access_token_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token', tenant=tenant_name),
-            authorize_url=str.format('https://login.microsoftonline.com/{tenant}/oauth2/v2.0/authorize', tenant=tenant_name),
-        )
-
-    def get_microsoft(self):
-        return self.microsoft
-
-microsoft_app = Microsoft()
 
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
     flash("This is an alpha version and could be unstable", "warning")
+    
+    # Check if the user should be directed to a SSO credentials based on subdomain or args (from Microsoft Teams)
+    tenant = ''
+    sso_credentials = False
+    company = None
+    if 'tenant' in request.args:
+        tenant = request.args['tenant']
     if current_user.is_authenticated:
         return redirect(url_for("main.index", subdomain=subdomain))
+    if subdomain != 'www':
+        company = Company.query.filter_by(premium=True, subdomain=subdomain).first()
+    elif tenant != '':
+        company = Company.query.filter_by(premium=True, tenant=tenant).first()
+    if company:
+        sso_credentials = True
+        session['tenant'] = tenant
+    else:
+        sso_credentials = False
+
     form = LoginEmailForm()
     if form.validate_on_submit():
+
+        # If user is connected normally (www outside Teams), if its domain is fully managed for SSO, redirect to SSO
+        domain = Domains.query.filter_by(name=form.email.data.split('@')[1], fully_managed_domain=1).first()
+        if domain:
+            company = Company.query.filter_by(id=domain.company_id, premium=True).first()
+            if company:
+                tenant = company.tenant
+                sso_credentials = True
+                return render_template(
+                    "auth/login_email.html", 
+                    title="Sign In", 
+                    subdomain=subdomain,
+                    sso_credentials = sso_credentials,
+                    tenant = tenant, 
+                    args=request.args.items(), 
+                    form=form
+                    )
+        # Check that the user is using an authorized email provider
         mail_provider = MailProviders.query.filter_by(domain=form.email.data.split('@')[1]).first()
         if not mail_provider:
             user = User.query.filter_by(email=form.email.data).first()
-            # TODO check domain if company have an account
+            # If user don't have an account yet, go the registration page
             if user is None:
                 flash("You don't have an account yet", "warning")
                 return redirect(url_for("auth.register", subdomain=subdomain, email=form.email.data))
             else:
-                formPassword = LoginPasswordForm(email = form.email.data)
-                return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
+                company = Company.query.filter_by(id=user.company_id, premium=True).first()
+                # If user company have SSO, push SSO
+                if company:
+                    tenant = company.tenant
+                    sso_credentials = True
+                    return render_template(
+                        "auth/login_email.html", 
+                        title="Sign In", 
+                        subdomain=subdomain,
+                        sso_credentials = sso_credentials,
+                        tenant = tenant, 
+                        args=request.args.items(), 
+                        form=form
+                        )
+                else:
+                    # If user exist, have a corporate email and the company doesn't have SSO go to normal password registration
+                    formPassword = LoginPasswordForm(email = form.email.data)
+                    return redirect(url_for("auth.login_with_password", subdomain=subdomain, email=form.email.data))
         else:
             flash("Only corporate account are allowed to connect", "warning")
-    return render_template("auth/login_email.html", title="Sign In", subdomain=subdomain, args=request.args.items(), form=form)
+    return render_template(
+        "auth/login_email.html", 
+        title="Sign In", 
+        subdomain=subdomain,
+        sso_credentials = sso_credentials,
+        tenant = tenant, 
+        args=request.args.items(), 
+        form=form
+        )
 
-@bp.route("/login_azure_old")
-def login_azure_old(subdomain='www'):
-    microsoft_app.set_microsoft(client_id = current_app.config['CLIENT_ID'], tenant_id=current_app.config['TENANT'], client_secret=current_app.config['CLIENT_SECRET'])
-    microsoft = microsoft_app.get_microsoft()
-    session.clear()
-    if 'microsoft_token' in session:
-        return redirect(url_for('main.index', subdomain=subdomain))
-    # Generate the guid to only accept initiated logins
-    guid = uuid.uuid4()
-    session['state'] = guid
-    print(url_for('auth.authorized', subdomain=subdomain, _external=True))
-    return microsoft.authorize(callback=url_for('auth.authorized', subdomain=subdomain, _external=True), state=guid)
-
+# If website not displayed in iFrame and have SSO, he is redirected here
+@bp.route("/login_azure_desktop")
+def login_azure_desktop(subdomain='www'):
+    if 'tenant' in session:    
+        company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
+        if company:
+            session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
+            print(session["flow"]["auth_uri"])
+            return redirect(session["flow"]["auth_uri"])
+    else:
+        flash("Something went wrong with the authentication process", "danger")
+    return redirect(url_for("main.index", subdomain=subdomain))
+    
+# TODO fix it
 @bp.route("/login_azure")
 def login_azure(subdomain='www'):
     client_id = current_app.config['CLIENT_ID']
     tenant_id = tenant_id=current_app.config['TENANT']
-    return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, args=request.args.items())
-
+    if 'tenant' in request.args:    
+        company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
+        if company:
+            scopes = company.scope.split(',')
+            return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, scopes=scopes, args=request.args.items())
+        else:
+            flash("Your company seems not to have a premium account to integrate with Teams", "warning")
+    return redirect(url_for("main.index", subdomain=subdomain))
+    
 @bp.route('/signin-oidc')
 def authorized(subdomain='www'):
-    client_id = current_app.config['CLIENT_ID']
-    user = User.query.filter_by(id=1).first()
-    login_user(user, remember=True)
-    my_request = request.args
     try:
         cache = _load_cache()
-        result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
-            session.get("flow", {}), request.args)
-        if "error" in result:
-            return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
-        session["user"] = result.get("id_token_claims")
-        user = User.query.filter_by(id=1).first()
-        login_user(user, remember=True)
-        _save_cache(cache)
+        if 'tenant' in session:    
+            company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
+        if company:
+            if company.banned:
+                flash("Sorry, your company is not allowed to use our service.", "danger")
+                return redirect(url_for("main.index", "danger"))
+            result = _build_msal_app(company=company, cache=cache).acquire_token_by_auth_code_flow(
+                session.get("flow", {}), request.args)
+            if "error" in result:
+                # TODO create template for error of azure login
+                flash("You seems not authorized by your administrator to get access, contact your admin", "danger")
+                return redirect(url_for("main.index", subdomain=subdomain))
+            session["user"] = result.get("id_token_claims")
+            
+            # Do a few verification on the token (as mentionned on Microsoft OAuth docs)
+            validation_token = True
+            if 'aud' in session["user"] and 'tid' in session["user"] and 'email' in session["user"]:
+                if (session["user"]["aud"] != company.client_id) or (session["user"]["tid"] != company.tenant):
+                    validation_token = False
+            else:
+                validation_token = False
+
+            if validation_token:    
+                user = User.query.filter_by(email=session["user"]["email"]).first()
+                if user:
+                    login_user(user, remember=True)
+                else:
+                    if 'name' in session["user"]:
+                        name = session["user"]["name"]
+                    else:
+                        name = "John Doe"
+                    user = User(username=name, email=session["user"]["email"], company_id=company.id, verified=1)
+                    db.session.add(user)
+                    db.session.commit()
+                    login_user(user, remember=True)
+                _save_cache(cache)
+            return redirect(url_for("main.index", subdomain=subdomain))
+        else:
+            flash("Something went wrong with the authentication process", "danger")
+            return redirect(url_for("main.index", subdomain=subdomain))
     except ValueError:  # Usually caused by CSRF
         pass  # Simply ignore them
     return render_template("auth/login_authorized_azure.html", title="Authorized", subdomain=subdomain, client_id=client_id, args=request.args.items())
-
-@bp.route('/signin-oidc-old')
-def authorized_old(subdomain='www'):
-    response = microsoft_app.get_microsoft().authorized_response()
-    if response is None:
-        return "Access Denied: Reason=%s\nError=%s" % (
-            response.get('error'), 
-            request.get('error_description')
-        )
-    # Check response for state
-    print("Response: " + str(response))
-    if str(session['state']) != str(request.args['state']):
-        raise Exception('State has been messed with, end authentication')
-    # Okay to store this in a local variable, encrypt if it's going to client
-    # machine or database. Treat as a password. 
-    session['microsoft_token'] = (response['access_token'], '')
-    user = User.query.filter_by(id=1).first()
-    login_user(user, remember=True)
-    return redirect(url_for('main.index', subdomain=subdomain)) 
-
-
-@bp.route("/login_azure2")
-def login_azure2(subdomain='www'):
-    session.clear()
-    session["flow"] = _build_auth_code_flow(scopes=current_app.config['SCOPE'], subdomain=subdomain)
-    return render_template("auth/login_azure.html", subdomain=subdomain, auth_url=session["flow"]["auth_uri"], version=msal.__version__)
-
-@bp.route("/signin2-oidc")  # Its absolute URL must match your app's redirect_uri set in AAD
-def authorized2(subdomain='www'):
-    try:
-        cache = _load_cache()
-        result = _build_msal_app(cache=cache).acquire_token_by_auth_code_flow(
-            session.get("flow", {}), request.args)
-        if "error" in result:
-            return render_template("auth/auth_error.html", subdomain=subdomain, result=result)
-        session["user"] = result.get("id_token_claims")
-        user = User.query.filter_by(id=1).first()
-        login_user(user, remember=True)
-        _save_cache(cache)
-    except ValueError:  # Usually caused by CSRF
-        pass  # Simply ignore them
-    return redirect(url_for("main.index", subdomain=subdomain))
 
 def _load_cache():
     cache = msal.SerializableTokenCache()
@@ -158,15 +189,20 @@ def _save_cache(cache):
     if cache.has_state_changed:
         session["token_cache"] = cache.serialize()
 
-def _build_msal_app(cache=None, authority=None):
+def _build_msal_app(cache=None, company=None):
+    if company:
+        authority = company.authority+company.tenant
     return msal.ConfidentialClientApplication(
-        current_app.config['CLIENT_ID'], authority=authority or current_app.config['AUTHORITY'],
-        client_credential=current_app.config['CLIENT_SECRET'], token_cache=cache)
+        company.client_id, authority=authority,
+        client_credential=company.client_secret, token_cache=cache)
 
-def _build_auth_code_flow(authority=None, scopes=None, subdomain='www'):
-    return _build_msal_app(authority=authority).initiate_auth_code_flow(
+def _build_auth_code_flow(company=None, subdomain='www'):
+    scopes = company.scope.split(',')
+    authority = company.authority+company.tenant
+    return _build_msal_app(company=company).initiate_auth_code_flow(
         scopes or [],
         redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True))
+        # redirect_uri=url_for("auth.authorized", _external=True))
         
 def _get_token_from_cache(scope=None):
     cache = _load_cache()  # This web app maintains one cache per session
@@ -210,7 +246,7 @@ def logout(subdomain='www'):
     logout_user()
     return redirect(url_for("auth.login", subdomain=subdomain))
 
-
+# TODO Verify that the company have SSO and deactivate register
 @bp.route("/register", methods=["GET", "POST"])
 def register(subdomain='www'):
     if current_user.is_authenticated:
@@ -234,12 +270,16 @@ def register(subdomain='www'):
         if mail_provider:
             flash("Only corporate account are allowed to connect", "danger")
             return redirect(url_for("auth.login", subdomain=subdomain))
+        
+        # Verify why this is here, this should be inside verify_account
         if request.args.get("token") is not None:
             company_id_by_token = verify_invitation_token(request.args.get("token"))
             user.company_id = company_id_by_token
         if query_domain is not None:
             if query_domain.fully_managed_domain==1:
                 user.company_id = query_domain.company_id   
+        # Until here
+
         if checkUser is None:
             user.set_password(form.password.data)
             db.session.add(user)
@@ -255,14 +295,16 @@ def register(subdomain='www'):
 
 @bp.route("/reset_password_request", methods=["GET", "POST"])
 def reset_password_request(subdomain='www'):
-    if current_user.is_authenticated:
-        return redirect(url_for("main.index", subdomain=subdomain))
     form = ResetPasswordRequestForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user:
-            send_password_reset_email(user, subdomain=subdomain)
-        flash("An email with instructions was sent to your address.", "success")
+            company = Company.query.filter_by(id=user.company_id, premium=False).first()
+            if company:
+                send_password_reset_email(user, subdomain=subdomain)
+                flash("An email with instructions was sent to your address.", "success")
+            else:
+                flash("Your company manage your password, we can't modify it", "warning")
         return redirect(url_for("auth.login", subdomain=subdomain))
     return render_template(
         "auth/reset_password_request.html", subdomain=subdomain, title="Reset Password", form=form
@@ -359,10 +401,15 @@ def reset_password(subdomain='www'):
         user = current_user
     form = ResetPasswordForm()
     if form.validate_on_submit() and user:
-        user.set_password(form.password.data)
-        db.session.commit()
-        flash("Your password has been reset.", "success")
+        company = Company.query.filter_by(id=user.company_id, premium=False).first()
+        if company:
+            user.set_password(form.password.data)
+            db.session.commit()
+            flash("Your password has been reset.", "success")
+        else:
+            flash("Your company manage your password, we can't modify it", "danger")
         return redirect(url_for("auth.login", subdomain=subdomain))
+        
     return render_template("auth/reset_password.html", subdomain=subdomain, title="Reset password", form=form)
 
 

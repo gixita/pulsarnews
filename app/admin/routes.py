@@ -4,7 +4,7 @@ from app.models import Administrator, Company, User, Post, Vote, Comment, Domain
 from app import db
 
 from app.admin import bp
-from app.admin.forms import EditUserForm, EditCompanyForm, EditDomainForm, EditPostForm
+from app.admin.forms import EditUserForm, EditCompanyForm, EditDomainForm, EditPostForm, AddCompanyForm
 
 def super_admin_required(f):
     def wrapper(*args, **kwargs):
@@ -91,22 +91,58 @@ def companies(subdomain='www'):
     companies = Company.query.all()
     return render_template("admin/companies.html", subdomain=subdomain, title="Dashboard - Companies", companies=companies)
 
+@bp.route("/add_company", methods=["GET", "POST"])
+@login_required
+@super_admin_required
+def add_company(subdomain='www'):
+    form = AddCompanyForm()
+    if form.validate_on_submit():
+        company = Company(name=form.name.data)
+        db.session.add(company)
+        db.session.commit()
+        flash("Your changes have been saved.", "success")
+        return redirect(url_for("admin.companies", subdomain=subdomain))
+    return render_template("admin/add_company.html", subdomain=subdomain, title="Dashboard - Add a company", form=form)
+
 @bp.route("/edit_company/<company_id>", methods=["GET", "POST"])
 @login_required
 @super_admin_required
 def edit_company(company_id, subdomain='www'):
     company = Company.query.filter_by(id=company_id).first_or_404()
     form = EditCompanyForm(company)
-    # form.email(disabled=True)
     if form.validate_on_submit():
         company.name = form.name.data
         company.banned = form.banned.data
+        company.premium = form.premium.data
+        company.type_of_auth = form.type_of_auth.data
+        company.subdomain = form.subdomain.data
+        company.tenant = form.tenant.data
+        company.client_id = form.client_id.data
+        company.client_secret = form.client_secret.data
+        company.resource = form.resource.data
+        company.callback_path = form.callback_path.data
+        company.authority = form.authority.data
+        company.redirect_path = form.redirect_path.data
+        company.endpoint = form.endpoint.data
+        company.scope = form.scope.data
         db.session.commit()
         flash("Your changes have been saved.", "success")
         return redirect(url_for("admin.companies", subdomain=subdomain))
     elif request.method == "GET":
         form.name.data = company.name
         form.banned.data = company.banned
+        form.premium.data = company.premium
+        form.type_of_auth.data = company.premium
+        form.subdomain.data = company.subdomain
+        form.tenant.data = company.tenant
+        form.client_id.data = company.client_id
+        form.client_secret.data = company.client_secret
+        form.resource.data = company.resource
+        form.callback_path.data = company.callback_path
+        form.authority.data = company.authority
+        form.redirect_path.data = company.redirect_path
+        form.endpoint.data = company.endpoint
+        form.scope.data = company.scope
     return render_template(
         "admin/edit_company.html", subdomain=subdomain, title="Edit company", form=form
     )

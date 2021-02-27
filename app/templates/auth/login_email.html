@@ -10,7 +10,7 @@
 <script type="text/javascript">
     function openWindow() {
         let url = window.location.origin + "/auth/login_azure"
-        if (window.microsoftTeams) {
+        if (inIframe()) {
             microsoftTeams.initialize();
             microsoftTeams.authentication.authenticate({
                 url: url,
@@ -25,9 +25,16 @@
             });
         }
         else {
-            window.open(url, "_blank", "width=" + 600 + ", height=" + 535);
+            window.location.replace("{{ url_for('auth.login_azure_desktop', subdomain=subdomain) }}");
         }
     }
+    function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
 </script>
 <div class="container">
     <div class="d-flex justify-content-center align-items-center" style="height: 100vh">
@@ -39,6 +46,9 @@
                 style="width: 250px;"
                 />
             </a>
+            
+            {% if not sso_credentials %}
+            
             <!-- <h5 class="mb-3">Connect</h5> -->
             <form action="" method="post" novalidate>
                 {{ form.hidden_tag() }}
@@ -50,21 +60,22 @@
                 </p>
                 <button class="btn btn-primary btn-lg" type="submit">Next</button>
             </form>
+
             <a href="{{ url_for('auth.register', subdomain=subdomain) }}">No account yet ?</a><br>
-            <a href="{{ url_for('auth.login_azure', subdomain=subdomain) }}">Login with Azure</a><br>
-            
-            
+            {% else %}
+            <p>
+                <br>
+                <button class="btn btn-primary btn-lg" id="btnLogin" type="button" onclick="openWindow()" style="display: block;">Log with your company credentials</button>
+            </p>
+            {% endif %}
+
             {% for arg in args %}
             <p>{{ arg  }}</p>
             {% endfor %}
             
-            <div class="silent-auth-container">
-                <div class="loading-block" style="display: none;">
-                    <div class="message-title2">Loading...</div>
-                    <div class="loader"></div>
-                </div>
-                <button class="ts-btn ts-btn-primary" id="btnLogin" type="button" onclick="openWindow()" style="display: block;">Log in</button>
-            </div>
+            
+            
+            
         </div>
     </div>
 </div>

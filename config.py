@@ -26,13 +26,4 @@ class Config(object):
     SERVER_NAME = os.environ.get("SERVER_NAME")
     
     #Azure auth
-    TENANT = os.environ.get('TENANT')
-    RESOURCE = os.environ.get('RESOURCE')
-    CLIENT_ID = os.environ.get('CLIENT_ID')
-    CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
-    CALLBACK_PATH = '/auth/signin-oidc'
-    AUTHORITY = os.environ.get('AUTHORITY')
-    REDIRECT_PATH = os.environ.get('REDIRECT_PATH')
-    ENDPOINT = os.environ.get('ENDPOINT')
-    SCOPE = [os.environ.get('SCOPE')]
     SESSION_TYPE = "filesystem" 

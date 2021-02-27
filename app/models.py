@@ -17,7 +17,20 @@ class Company(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
     banned = db.Column(db.Boolean, default=False)
-    
+    premium = db.Column(db.Boolean, default=False)
+    type_of_auth = db.Column(db.String(64))
+    subdomain = db.Column(db.String(128))
+    tenant = db.Column(db.String(256), unique=True)
+    client_id = db.Column(db.String(256))
+    client_secret = db.Column(db.String(256))
+    resource = db.Column(db.String(256))
+    callback_path = db.Column(db.String(256))
+    authority = db.Column(db.String(256))
+    redirect_path = db.Column(db.String(256))
+    endpoint = db.Column(db.String(256))
+    scope = db.Column(db.String(256))
+
+
     def __repr__(self):
         return f"<Post {self.name}>"
 
