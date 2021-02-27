@@ -22,7 +22,7 @@ from app.auth.email import send_password_reset_email, send_verification_email
 from app.main.invitation import verify_invitation_token
 import msal
 
-
+# TODO block user in case of multiple invalid logins
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
