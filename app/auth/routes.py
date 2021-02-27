@@ -42,7 +42,7 @@ def login(subdomain='www'):
         company = Company.query.filter_by(premium=True, tenant=tenant).first()
     if company:
         sso_credentials = True
-        session['tenant'] = tenant
+        session['tenant'] = company.tenant
     else:
         sso_credentials = False
 
