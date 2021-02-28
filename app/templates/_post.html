@@ -5,7 +5,7 @@
         <div class="d-flex flex-row align-items-center">
           <div class="ml-2">
             
-            <a class="post-title" href="{{ post.url }}"><b>{{ post.title }}</b></a><span class="post-via-title">(via {{ post.url_base }})</span>
+            <a class="post-title" href="{{ post.url }}">{{ post.title }}</a><span class="post-via-title">(via {{ post.url_base }})</span>
             {% if post.text %}
             <div class="px-3 pt-2 pb-2 text-muted">{{ post.text }}</div>
             {% endif %}

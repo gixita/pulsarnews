@@ -36,114 +36,121 @@
 </head>
 <body class="my-font bg-light">
   
-  <header class="navbar navbar-dark sticky-top bg-custom-blue flex-md-nowrap p-0 shadow">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ url_for('main.index', subdomain=subdomain) }}">
-      <img
-      src="{{ url_for('static', filename='pulsarnews-dark.png', _external=True)}}"
-      style="height: 30px;"
-      />
-    </a>
-    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <form action="/search" class="w-100">
-      <input class="form-control form-control-dark w-100" type="text" placeholder="Search" aria-label="Search" name="q">
-    </form>
-    <ul class="navbar-nav px-3">
-      <li class="nav-item text-nowrap">
-        <a class="nav-link" href="{{ url_for('auth.logout', subdomain=subdomain) }}">Sign out</a>
-      </li>
-    </ul>
-  </header>
+  
   <script>
     microsoftTeams.initialize();
-    </script>
+  </script>
   <div class="container-fluid">
     
     <div class="row">
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-3 text-muted">
-            <span>Company feed</span>
-          </h6>
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.index', subdomain=subdomain) }}">
-                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-                  <!-- trending-up -->
-                  <polyline xmlns="http://www.w3.org/2000/svg" points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline xmlns="http://www.w3.org/2000/svg" points="17 6 23 6 23 12"/>
-                </svg>
-                
-                Trending
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.new', subdomain=subdomain) }}">
-                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-                  <!-- watch -->
-                  <circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="12" r="7"/><polyline xmlns="http://www.w3.org/2000/svg" points="12 9 12 12 13.5 13.5"/><path xmlns="http://www.w3.org/2000/svg" d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/>
-                </svg>
-                Newest
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.submit', subdomain=subdomain) }}">
-                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-                  <!-- plus -->
-                  <line xmlns="http://www.w3.org/2000/svg" x1="12" y1="5" x2="12" y2="19"/><line xmlns="http://www.w3.org/2000/svg" x1="5" y1="12" x2="19" y2="12"/>
-                </svg>
-                Submit a post
-              </a>
-            </li>
-          </ul>
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-5 mb-3 text-muted">
-            <span>My profile</span>
-          </h6>
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.user_submissions', subdomain=subdomain)}}">
-                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-                  <!-- archive -->
-                  <polyline xmlns="http://www.w3.org/2000/svg" points="21 8 21 21 3 21 3 8"/><rect xmlns="http://www.w3.org/2000/svg" x="1" y="3" width="22" height="5"/><line xmlns="http://www.w3.org/2000/svg" x1="10" y1="12" x2="14" y2="12"/>
-                </svg>
-                My posts
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.user', subdomain=subdomain) }}">
-                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-                  <!-- user -->
-                  <path xmlns="http://www.w3.org/2000/svg" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="7" r="4"/>
-                </svg>
-                Edit my profile
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" aria-current="page" href="{{ url_for('main.invite_colleague', subdomain=subdomain) }}">
-                <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-                  <!-- link-2 -->
-                  <path xmlns="http://www.w3.org/2000/svg" d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"/><line xmlns="http://www.w3.org/2000/svg" x1="8" y1="12" x2="16" y2="12"/>
-                </svg>
-                Invite a colleague
-              </a>
-            </li>
-            
-          </ul>
-          {% if current_user.admin == True %}    
-          <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-5 mb-3 text-muted">
-            <span>Admin panel</span>
-          </h6>
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('main.manage_domain', subdomain=subdomain) }}">
-                Manage domains
-              </a>
-            </li>
-          </ul>
-          {% endif %}
-          
+      <nav class="navbar navbar-dark bg-light flex-md-nowrap"  style="height: 100%;">
+        <div class="col-2 d-flex justify-content-start">
+        <button class="btn btn-light" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+          <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+            <!-- link-2 -->
+            <line xmlns="http://www.w3.org/2000/svg" x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line xmlns="http://www.w3.org/2000/svg" x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+
+        </button>
+        
         </div>
-      </nav>
+        <div class="col-6 bg-light ">
+        <a class="d-flex justify-content-center" href="{{ url_for('main.index', subdomain=subdomain) }}">
+          <img
+          src="{{ url_for('static', filename='pulsarnews.png', _external=True)}}"
+          style="height: 40px;"
+          />
+        </a>
+      </div>
+      <div class="col-2">
+        <a class="d-flex justify-content-end" href="{{ url_for('main.index', subdomain=subdomain) }}">
+          <svg class="feather-user" viewBox="0 0 515.556 515.556" xmlns="http://www.w3.org/2000/svg"><path d="m348.918 37.751c50.334 50.334 50.334 131.942 0 182.276s-131.942 50.334-182.276 0-50.334-131.942 0-182.276c50.334-50.335 131.942-50.335 182.276 0"/><path d="m455.486 350.669c-117.498-79.391-277.917-79.391-395.415 0-17.433 11.769-27.848 31.656-27.848 53.211v111.676h451.111v-111.676c0-21.555-10.416-41.442-27.848-53.211z"/></svg>
+        </a>
+      </div>
+        <div id="sidebarMenu" class="navbar navbar-dark collapse bg-light fixed-top mt-5 col-md-3 col-lg-2 me-0  px-3">
+          <div class="pt-3">
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-3 text-muted">
+              <span>Company feed</span>
+            </h6>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{{ url_for('main.index', subdomain=subdomain) }}">
+                  <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- trending-up -->
+                    <polyline xmlns="http://www.w3.org/2000/svg" points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline xmlns="http://www.w3.org/2000/svg" points="17 6 23 6 23 12"/>
+                  </svg>
+                  
+                  Trending
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.new', subdomain=subdomain) }}">
+                  <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- watch -->
+                    <circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="12" r="7"/><polyline xmlns="http://www.w3.org/2000/svg" points="12 9 12 12 13.5 13.5"/><path xmlns="http://www.w3.org/2000/svg" d="M16.51 17.35l-.35 3.83a2 2 0 0 1-2 1.82H9.83a2 2 0 0 1-2-1.82l-.35-3.83m.01-10.7l.35-3.83A2 2 0 0 1 9.83 1h4.35a2 2 0 0 1 2 1.82l.35 3.83"/>
+                  </svg>
+                  Newest
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.submit', subdomain=subdomain) }}">
+                  <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- plus -->
+                    <line xmlns="http://www.w3.org/2000/svg" x1="12" y1="5" x2="12" y2="19"/><line xmlns="http://www.w3.org/2000/svg" x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                  Submit a post
+                </a>
+              </li>
+            </ul>
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-5 mb-3 text-muted">
+              <span>My profile</span>
+            </h6>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{{ url_for('main.user_submissions', subdomain=subdomain)}}">
+                  <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- archive -->
+                    <polyline xmlns="http://www.w3.org/2000/svg" points="21 8 21 21 3 21 3 8"/><rect xmlns="http://www.w3.org/2000/svg" x="1" y="3" width="22" height="5"/><line xmlns="http://www.w3.org/2000/svg" x1="10" y1="12" x2="14" y2="12"/>
+                  </svg>
+                  My posts
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{{ url_for('main.user', subdomain=subdomain) }}">
+                  <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- user -->
+                    <path xmlns="http://www.w3.org/2000/svg" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle xmlns="http://www.w3.org/2000/svg" cx="12" cy="7" r="4"/>
+                  </svg>
+                  Edit my profile
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="{{ url_for('main.invite_colleague', subdomain=subdomain) }}">
+                  <svg class="feather mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+                    <!-- link-2 -->
+                    <path xmlns="http://www.w3.org/2000/svg" d="M15 7h3a5 5 0 0 1 5 5 5 5 0 0 1-5 5h-3m-6 0H6a5 5 0 0 1-5-5 5 5 0 0 1 5-5h3"/><line xmlns="http://www.w3.org/2000/svg" x1="8" y1="12" x2="16" y2="12"/>
+                  </svg>
+                  Invite a colleague
+                </a>
+              </li>
+              
+            </ul>
+            {% if current_user.admin == True %}    
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-5 mb-3 text-muted">
+              <span>Admin panel</span>
+            </h6>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('main.manage_domain', subdomain=subdomain) }}">
+                  Manage domains
+                </a>
+              </li>
+            </ul>
+            {% endif %}
+            
+          </div>
+        </div>
+      </nav> <!-- Navbar -->
       
       <main class="col-md-9 ms-sm-auto col-lg-10 px-3">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -157,6 +164,7 @@
         {% endif %}
         {% endwith %}
         
+
         {% block content %}{% endblock %}
       </main>
     </div>
