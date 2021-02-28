@@ -12,7 +12,7 @@ import logging
 from flaskext.markdown import Markdown
 from flask_mail import Mail
 
-is_subdomain_enable = True
+is_subdomain_enable = False
 
 db = SQLAlchemy(model_class=FlaskBaseModel)
 migrate = Migrate(compare_type=True)
@@ -33,6 +33,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
     app.config.update(SESSION_TYPE = 'filesystem')
     
+
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
