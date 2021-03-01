@@ -26,7 +26,7 @@ import msal
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
-    flash("This is an alpha version and could be unstable", "warning")
+    #flash("This is an alpha version and could be unstable", "warning")
     
     # Check if the user should be directed to a SSO credentials based on subdomain or args (from Microsoft Teams)
     tenant = ''
