@@ -395,6 +395,11 @@ def config(subdomain='www'):
         subdomain=subdomain
     )
 
+@bp.route("/static_file/<filename>", methods=["GET"])
+def static_file(filename='', subdomain='www'):
+    return current_app.send_static_file(filename)
+
+    
 # @bp.route("/init_mail_providers", methods=["GET"])
 # def init_mail_providers():
 #     print(os.getcwd())

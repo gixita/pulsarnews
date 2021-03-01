@@ -16,10 +16,10 @@
   {{ moment.lang("en") }}
   <script src= 'https://statics.teams.cdn.office.net/sdk/v1.6.0/js/MicrosoftTeams.min.js'></script>
   
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='main.css')}}">
-  <link href="{{ url_for('static', filename='css/bootstrap.min.css')}}" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('main.static_file', subdomain=subdomain, filename='main.css')}}">
+  <link href="{{ url_for('main.static_file', subdomain=subdomain, filename='bootstrap.min.css')}}" rel="stylesheet">
   
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='dashboard.css')}}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('main.static_file', subdomain=subdomain, filename='dashboard.css')}}">
   <script type="text/javascript">
     $(document).ready(function() {
       var text_max = 1000;
@@ -48,7 +48,7 @@
         <div class="col-6 bg-light ">
           <a class="d-flex justify-content-center" href="{{ url_for('main.index', subdomain=subdomain) }}">
             <img
-            src="{{ url_for('static', filename='pulsarnews.png', _external=True)}}"
+            src="{{ url_for('main.static_file', subdomain=subdomain, filename='pulsarnews.png', _external=True)}}"
             style="height: 40px;"
             />
           </a>
@@ -88,7 +88,7 @@
     </div>
   </div>
   
-  <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js')}}"></script>
+  <script src="{{ url_for('main.static_file', subdomain=subdomain, filename='bootstrap.bundle.min.js')}}"></script>
 </body>
 </html>
 

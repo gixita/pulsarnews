@@ -32,7 +32,7 @@ def create_app(config_class=Config):
     app = Flask(__name__)
     app.config.from_object(config_class)
     app.config.update(SESSION_TYPE = 'filesystem')
-    
+    app.static_folder = 'static'
 
     db.init_app(app)
     migrate.init_app(app, db)
@@ -85,7 +85,6 @@ def create_app(config_class=Config):
 
             app.logger.setLevel(logging.INFO)
             app.logger.info("Flasknews startup")
-
 
     return app
 
