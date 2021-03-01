@@ -1,12 +1,30 @@
 {% extends "base.html" %} 
 {% block content %}
-<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 m-4  max-width-posts">
-  <h1 class="h1-index text-muted">{{ title }}</h1> 
-  <svg class="feather-submit mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
-    <circle cx="12" cy="12" r="10"></circle><line class="feather-submit-plus" x1="12" y1="8" x2="12" y2="16"></line><line class="feather-submit-plus" x1="8" y1="12" x2="16" y2="12"></line>
-  </svg>
+<div class="d-flex">
+  <div class="col-6">
+    <div class="dropdown">
+      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButtonTitle" data-bs-toggle="dropdown" aria-expanded="false">
+        <span class="h1-index text-muted">{{ title }}</span>
+      </button>
+      <ul class="dropdown-menu" style="background-color: inherit;" aria-labelledby="dropdownMenuButtonTitle">
+        {% if title != 'Trending' %}
+        <li><a class="dropdown-item" href="{{ url_for('main.index', subdomain=subdomain) }}"><span class="h1-subtitle text-muted">Trending</span></a></li>
+        {% else %}
+        <li><a class="dropdown-item" href="{{ url_for('main.new', subdomain=subdomain) }}"><span class="h1-subtitle text-muted">Newest</span></a></li>
+        {% endif %}
+      </ul>
+    </div>
+    
+  </div>
+  <div class="col-6">
+    <a class="d-flex justify-content-end" href="{{ url_for('main.submit', subdomain=subdomain) }}">
+      <svg class="feather-submit mx-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" >
+        <circle cx="12" cy="12" r="10"></circle><line class="feather-submit-plus" x1="12" y1="8" x2="12" y2="16"></line><line class="feather-submit-plus" x1="8" y1="12" x2="16" y2="12"></line>
+      </svg>
+    </a>
+  </div>
 </div>
-<ol class="mx-2 px-0 mx-md-5 max-width-posts" start="{{ start_rank_num }}">
+<ol class="mt-4" start="{{ start_rank_num }}">
   {% for post in posts %} {% include '_post.html' %} {% endfor %}
 </ol>
 {% if next_url %} <a href="{{ next_url }}"> More</a> {% endif %} 

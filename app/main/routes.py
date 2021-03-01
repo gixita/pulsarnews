@@ -380,6 +380,11 @@ def upvote_comment(comment_id,subdomain='www'):
     return redirect(redirect_url())
 import os
 
+@bp.route("/settings", methods=["GET"])
+@login_required
+@company_required
+def settings(subdomain='www'):
+    return render_template("settings.html", subdomain=subdomain, title="Settings")
 
 @bp.route("/config")
 @bp.route("/privacy")

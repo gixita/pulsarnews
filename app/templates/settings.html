@@ -1,0 +1,31 @@
+{% extends "base.html" %} 
+{% block content %}
+<div class="d-flex row margin-row">
+    <h1 class="h1-index text-muted">{{ title }}</h1>
+    <div class="settings-box mt-5 px-3">
+        <h2 class="h1-subtitle pb-3">My profile</h2>
+        <p>
+            <a class="nav-link" href="{{ url_for('main.user', subdomain=subdomain) }}">Manage my profile</a>
+        </p>
+        <p>
+            <a class="nav-link" href="{{ url_for('auth.reset_password', subdomain=subdomain) }}">Change my password</a>
+        </p>
+        <p>
+            <a class="nav-link" href="{{ url_for('main.invite_colleague', subdomain=subdomain) }}">Invite a colleague</a>
+        </p>
+    </div>
+    {% if current_user.admin == True %}
+    <div class="settings-box mt-4 px-3">
+        
+        <h2 class="h1-subtitle pb-3">Admin panel</h2>
+        <p>
+            <a class="nav-link" href="{{ url_for('main.manage_domain', subdomain=subdomain) }}">Manage domains</a>
+        </p>
+        <p>
+            <a class="nav-link" href="#">Manage users</a>
+        </p>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}
