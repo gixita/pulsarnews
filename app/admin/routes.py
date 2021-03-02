@@ -1,10 +1,12 @@
-from flask import flash, redirect, render_template, request, url_for, jsonify
+from flask import flash, redirect, render_template, request, url_for, jsonify, current_app
 from flask_login import current_user, login_required
 from app.models import Administrator, Company, User, Post, Vote, Comment, Domains
 from app import db
 
 from app.admin import bp
 from app.admin.forms import EditUserForm, EditCompanyForm, EditDomainForm, EditPostForm, AddCompanyForm, AddDomainForm
+from cryptography.fernet import Fernet
+import base64
 
 def super_admin_required(f):
     def wrapper(*args, **kwargs):
@@ -109,6 +111,7 @@ def add_company(subdomain='www'):
 @super_admin_required
 def edit_company(company_id, subdomain='www'):
     company = Company.query.filter_by(id=company_id).first_or_404()
+    cipher = Fernet(current_app.config['ENCRYPTION_KEY'].encode('utf-8'))
     form = EditCompanyForm(company)
     if form.validate_on_submit():
         company.name = form.name.data
@@ -118,7 +121,7 @@ def edit_company(company_id, subdomain='www'):
         company.subdomain = form.subdomain.data
         company.tenant = form.tenant.data
         company.client_id = form.client_id.data
-        company.client_secret = form.client_secret.data
+        company.client_secret = cipher.encrypt(bytes(form.client_secret.data, 'utf-8'))
         company.resource = form.resource.data
         company.callback_path = form.callback_path.data
         company.authority = form.authority.data
@@ -136,7 +139,8 @@ def edit_company(company_id, subdomain='www'):
         form.subdomain.data = company.subdomain
         form.tenant.data = company.tenant
         form.client_id.data = company.client_id
-        form.client_secret.data = company.client_secret
+        if company.client_secret:
+            form.client_secret.data = cipher.decrypt(company.client_secret).decode('utf-8')
         form.resource.data = company.resource
         form.callback_path.data = company.callback_path
         form.authority.data = company.authority

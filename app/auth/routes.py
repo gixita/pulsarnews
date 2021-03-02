@@ -21,13 +21,14 @@ from app.models import User, Company, Domains, MailProviders
 from app.auth.email import send_password_reset_email, send_verification_email
 from app.main.invitation import verify_invitation_token
 import msal
+from cryptography.fernet import Fernet
+import base64
 
 # TODO block user in case of multiple invalid logins
 @bp.route("/", methods=["GET", "POST"])
 @bp.route("/login", methods=["GET", "POST"])
 def login(subdomain='www'):
     #flash("This is an alpha version and could be unstable", "warning")
-    
     # Check if the user should be directed to a SSO credentials based on subdomain or args (from Microsoft Teams)
     tenant = ''
     sso_credentials = False
@@ -181,9 +182,10 @@ def _save_cache(cache):
 def _build_msal_app(cache=None, company=None):
     if company:
         authority = company.authority+company.tenant
+        cipher = Fernet(current_app.config['ENCRYPTION_KEY'].encode('utf-8'))
     return msal.ConfidentialClientApplication(
         company.client_id, authority=authority,
-        client_credential=company.client_secret, token_cache=cache)
+        client_credential=cipher.decrypt(company.client_secret).decode('utf-8'), token_cache=cache)
 
 def _build_auth_code_flow(company=None, subdomain='www'):
     scopes = company.scope.split(',')
