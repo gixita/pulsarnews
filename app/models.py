@@ -79,7 +79,7 @@ class User(UserMixin, db.Model):
     comments = db.relationship("Comment", backref="author", lazy="dynamic")
     about_me = db.Column(db.String(180))
     karma = db.Column(db.Integer, default=1)
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     refresh_tokens = db.relationship('RefreshToken', backref='user', lazy="dynamic")
     company_id = db.Column(db.Integer, db.ForeignKey("company.id"))
     admin = db.Column(db.Boolean, default=False)
@@ -234,7 +234,7 @@ class Post(db.Model):
     url = db.Column(db.Text())
     url_base = db.Column(db.Text())
     text = db.Column(db.String(1000))
-    timestamp = db.Column('timestamp', db.DateTime, index=True, default=datetime.utcnow())
+    timestamp = db.Column('timestamp', db.DateTime, index=True, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
     score = db.Column(db.Integer, default=0)
     pop_score = db.Column(db.Float, default=0)
@@ -288,7 +288,7 @@ class Post(db.Model):
     # TODO maybe that should be a hybrid_property instead of writing it to the database
     # Let's wait for to setup the notification that will maybe use it
     def update(self, gravity=1.8):
-        datetime_difference = datetime.utcnow() - self.timestamp
+        datetime_difference = datetime.utcnow - self.timestamp
         hours_passed = (
             datetime_difference.seconds / 60 
         )
@@ -373,7 +373,7 @@ class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(1000))
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"))
-    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow())
+    timestamp = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     path = db.Column(db.Text, index=True)
     parent_id = db.Column(db.Integer, db.ForeignKey("comment.id"))
     replies = db.relationship(
@@ -383,7 +383,7 @@ class Comment(db.Model):
     )
     post_id = db.Column(db.Integer, db.ForeignKey("post.id"))
     thread_timestamp = db.Column(
-        db.DateTime, index=True, default=datetime.utcnow()
+        db.DateTime, index=True, default=datetime.utcnow
     )
     score = db.Column(db.Integer, default=0)
     thread_score = db.Column(db.Integer, default=0)
