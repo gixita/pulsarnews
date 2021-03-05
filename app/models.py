@@ -288,7 +288,7 @@ class Post(db.Model):
     # TODO maybe that should be a hybrid_property instead of writing it to the database
     # Let's wait for to setup the notification that will maybe use it
     def update(self, gravity=1.8):
-        datetime_difference = datetime.utcnow - self.timestamp
+        datetime_difference = datetime.utcnow() - self.timestamp
         hours_passed = (
             datetime_difference.seconds / 60 
         )
