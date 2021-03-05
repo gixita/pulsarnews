@@ -2,11 +2,11 @@
 {% block content %}
 <div class="d-flex">
   <div class="col-6">
-    <div class="dropdown">
-      <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButtonTitle" data-bs-toggle="dropdown" aria-expanded="false">
+    <div class="dropdown mb-0">
+      <button class="btn-index dropdown-toggle" type="button" id="dropdownMenuButtonTitle" data-bs-toggle="dropdown" aria-expanded="false">
         <span class="h1-index text-muted">{{ title }}</span>
       </button>
-      <ul class="dropdown-menu" style="background-color: inherit;" aria-labelledby="dropdownMenuButtonTitle">
+      <ul class="dropdown-menu pt-0 mt-0 px-2" style="border:0; background-color: inherit;" aria-labelledby="dropdownMenuButtonTitle">
         {% if title != 'Trending' %}
         <li><a class="dropdown-item" href="{{ url_for('main.index', subdomain=subdomain) }}"><span class="h1-subtitle text-muted">Trending</span></a></li>
         {% else %}
