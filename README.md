@@ -52,20 +52,9 @@ $
 (venv) $ pip install -r requirements.txt
 ```
 
-- create a `.env` file in the home directory with the following structure
+- create a `.env` file in the home directory based on the file `.env`
 
-```python
-FLASK_APP=flasknews.py
-SECRET_KEY = "yoursecretkey"
-MAIL_ADMIN_ADDRESS = <admin_email_adress>
-MAIL_SERVER = <admin_mail_server>
-MAIL_PORT = <admin_mail_port>
-MAIL_USE_TLS = 1
-MAIL_USERNAME = <admin_email_adress>
-MAIL_PASSWORD = <admin_email_password>
-```
-
-
+- Modify the variable `is_subdomain_enable = True` to `is_subdomain_enable = False` in `__init__.py` in the `app` folder, that will deactivate the management of subdomain and enable to use `localhost`.
 
 - initiate your database
 
