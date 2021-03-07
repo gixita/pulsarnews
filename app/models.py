@@ -287,12 +287,12 @@ class Post(db.Model):
 
     # TODO maybe that should be a hybrid_property instead of writing it to the database
     # Let's wait for to setup the notification that will maybe use it
-    def update(self, gravity=1.8):
+    def update(self, gravity=1.1):
         datetime_difference = datetime.utcnow() - self.timestamp
         hours_passed = (
-            datetime_difference.seconds / 60 
+            datetime_difference.days * 24 + datetime_difference.seconds / 3600 
         )
-        self.pop_score = ((self.score + 1) / pow((hours_passed + 2), gravity))
+        self.pop_score = ((self.score + 10) / pow((hours_passed + 2), gravity))
 
     def __repr__(self):
         return f"<Post {self.title}>"
