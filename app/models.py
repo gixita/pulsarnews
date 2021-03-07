@@ -87,6 +87,8 @@ class User(UserMixin, db.Model):
     banned = db.Column(db.Boolean, default=False)
     subscribe_newsletter = db.Column(db.Boolean, default=True)
     is_super_admin = db.relationship('Administrator', backref='user', lazy="dynamic")
+    nb_conn_attempt = db.Column(db.Integer, default=0)
+    conn_blocked_timestamp = db.Column('conn_blocked_timestamp', db.DateTime,default=datetime.utcnow)
 
     def get_reset_password_token(self, expires_in=600):
         return jwt.encode(

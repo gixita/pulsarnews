@@ -1,7 +1,7 @@
 from flask import flash, redirect, render_template, request, url_for, jsonify, current_app, session
 from flask_login import current_user, login_user, logout_user
 
-
+import datetime
 from werkzeug.urls import url_parse
 import json
 
@@ -221,15 +221,31 @@ def login_with_password(subdomain='www'):
         mail_in_blacklist = MailProviders.query.filter_by(domain=email.split('@')[1]).first()
         if not mail_in_blacklist:
             user = User.query.filter_by(email=email).first()
-            if user is None or not user.check_password(form.password.data):
+            if user is None:
                 flash("Invalid username or password", "warning")
                 return redirect(url_for("auth.login", subdomain=subdomain))
-            # TODO in post method already authenticated user can relogin without get the flash message of "you are already looged in"
-            login_user(user, remember=True)
-            next_page = request.args.get("next")
-            if not next_page or url_parse(next_page).netloc != "":
-                next_page = url_for("main.index", subdomain=subdomain)
-            return redirect(next_page)
+            else:
+                if user.nb_conn_attempt > 2 and user.conn_blocked_timestamp > datetime.datetime.utcnow():
+                    flash("Your account was locked due to invalid credentials, please wait a minute", "danger")
+                    return redirect(url_for("auth.login", subdomain=subdomain))
+                else:
+                    if user.check_password(form.password.data):
+                        # TODO in post method already authenticated user can relogin without get the flash message of "you are already looged in"
+                        user.nb_conn_attempt = 0
+                        db.session.commit()
+                        login_user(user, remember=True)
+                        next_page = request.args.get("next")
+                        if not next_page or url_parse(next_page).netloc != "":
+                            next_page = url_for("main.index", subdomain=subdomain)
+                        return redirect(next_page)
+                    else:
+                        user.nb_conn_attempt += 1
+                        flash("Invalid username or password", "warning")
+                        if user.nb_conn_attempt > 2:
+                            user.conn_blocked_timestamp = datetime.datetime.utcnow()+datetime.timedelta(0,60)
+                            flash("Your account is now lock due to multiple invalid credentials, please wait a minute", "danger")
+                        db.session.commit()
+                        return redirect(url_for("auth.login", subdomain=subdomain))  
         else:
             flash("Only corporate account are allowed to connect", "warning")
     return render_template("auth/login_password.html", subdomain=subdomain, title="Sign In", form=form)
