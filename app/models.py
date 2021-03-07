@@ -292,7 +292,7 @@ class Post(db.Model):
         hours_passed = (
             datetime_difference.days * 24 + datetime_difference.seconds / 3600 
         )
-        self.pop_score = ((self.score + 10) / pow((hours_passed + 2), gravity))
+        self.pop_score = ((self.score + 1) / pow((hours_passed + 2), gravity))
 
     def __repr__(self):
         return f"<Post {self.title}>"
