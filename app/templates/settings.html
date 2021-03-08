@@ -14,6 +14,16 @@
             <a class="nav-link" href="{{ url_for('main.invite_colleague', subdomain=subdomain) }}">Invite a colleague</a>
         </p>
     </div>
+    <div class="settings-box mt-5 px-3">
+        <h2 class="h1-subtitle pb-3">Legal information</h2>
+        <p>
+            <a class="nav-link" href="{{ url_for('main.privacy', subdomain=subdomain) }}">Privacy policy</a>
+        </p>
+        <p>
+            <a class="nav-link" href="{{ url_for('main.terms', subdomain=subdomain) }}">Terms of use</a>
+        </p>
+        
+    </div>
     {% if current_user.admin == True %}
     <div class="settings-box mt-4 px-3">
         

@@ -387,12 +387,26 @@ def settings(subdomain='www'):
     return render_template("settings.html", subdomain=subdomain, title="Settings")
 
 @bp.route("/config")
-@bp.route("/privacy")
-@bp.route("/termsofuse")
 def config(subdomain='www'):
     return render_template(
         "config.html", 
         subdomain=subdomain
+    )
+
+@bp.route("/privacy")
+def privacy(subdomain='www'):
+    return render_template(
+        "privacy.html", 
+        subdomain=subdomain,
+        title="Privacy policy"
+    )
+
+@bp.route("/terms")
+def terms(subdomain='www'):
+    return render_template(
+        "terms.html", 
+        subdomain=subdomain,
+        title="Terms of use"
     )
 
 @bp.route("/static_file/<filename>", methods=["GET"])
