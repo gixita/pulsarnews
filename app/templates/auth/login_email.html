@@ -9,7 +9,7 @@
 <script src="https://secure.aadcdn.microsoftonline-p.com/lib/1.0.15/js/adal.min.js" integrity="sha384-lIk8T3uMxKqXQVVfFbiw0K/Nq+kt1P3NtGt/pNexiDby2rKU6xnDY8p16gIwKqgI" crossorigin="anonymous"></script>
 <script type="text/javascript">
     function openWindow() {
-        let url = window.location.origin + "/auth/login_azure"
+        let url = window.location.origin + "/auth/login_azure_desktop"
         if (inIframe()) {
             microsoftTeams.initialize();
             microsoftTeams.authentication.authenticate({

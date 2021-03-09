@@ -129,7 +129,7 @@ def login_azure(subdomain='www'):
             tenant_id = company.tenant
             client_id = company.client_id
             scopes = company.scope.split(',')
-            
+
             return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, scopes=scopes, args=request.args.items())
         else:
             flash("Your company seems not to have a premium account to integrate with Teams", "warning")
@@ -141,8 +141,12 @@ def login_azure(subdomain='www'):
 def authorized(subdomain='www'):
     try:
         cache = _load_cache()
-        if 'tenant' in session:    
-            company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
+        tenant = ''
+        if 'tenant' in request.args:
+            tenant = request.args['tenant']
+        elif 'tenant' in session:
+            tenant = session['tenant']  
+        company = Company.query.filter_by(premium=True, tenant=tenant).first()
         if company:
             if company.banned:
                 flash("Sorry, your company is not allowed to use our service.", "danger")
