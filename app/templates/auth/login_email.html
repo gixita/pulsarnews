@@ -18,6 +18,7 @@
                 height: 535,
                 successCallback: function (result) {
                     getUserProfile(result.accessToken);
+                    notifySuccess(result.accessToken);
                 },
                 failureCallback: function (reason) {
                     handleAuthError(reason);

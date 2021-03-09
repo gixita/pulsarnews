@@ -101,7 +101,6 @@ def login_azure_desktop(subdomain='www'):
         company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
         if company:
             session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
-            print(session["flow"]["auth_uri"])
             return redirect(session["flow"]["auth_uri"])
         else:
             flash("Something went wrong with the authentication process", "danger")
@@ -109,7 +108,6 @@ def login_azure_desktop(subdomain='www'):
         company = Company.query.filter_by(premium=True, tenant=request.args['tenant']).first()
         if company:
             session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
-            print(session["flow"]["auth_uri"])
             return redirect(session["flow"]["auth_uri"])
         else:
             flash("Something went wrong with the authentication process", "danger")
