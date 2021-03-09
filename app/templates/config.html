@@ -1,9 +1,17 @@
 <html>
 <head>
     <script src='https://statics.teams.cdn.office.net/sdk/v1.6.0/js/MicrosoftTeams.min.js'></script>
+
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/pell/dist/pell.min.css">
+    <style>
+      /* override styles here */
+      .pell-content {
+        background-color: pink;
+      }
+    </style>
 </head>
 <body>
-    <img id="icon" src="{{ url_for('main.static_file', subdomain=subdomain, filename='pulsarnews.png')}}" alt="icon" style="width:100px" />
+<img id="icon" src="{{ url_for('main.static_file', subdomain=subdomain, filename='pulsarnews.png')}}" alt="icon" style="width:100px" />
     
     
     <script>
@@ -21,6 +29,9 @@
     </script>
     {% block content %}
     <a href="{{url_for('main.config', subdomain=subdomain)}}">Link to privacy</a>
+    <div id="pell" class="pell" />
+    <script src="https://unpkg.com/pell"></script>
     {% endblock %}
+    
 </body>
 </html>

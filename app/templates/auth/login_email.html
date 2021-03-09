@@ -68,8 +68,10 @@
                 <button class="btn btn-primary btn-lg" id="btnLogin" type="button" onclick="openWindow()" style="display: block;">Log with your company credentials</button>
             </p>
             {% endif %}
-
-           
+            
+            {% for key in request.args %}
+            Arg : {{ key }}<br>
+            {% endfor %}
             
             
             
