@@ -97,12 +97,14 @@ def login(subdomain='www'):
 # If website not displayed in iFrame and have SSO, he is redirected here
 @bp.route("/login_azure_desktop")
 def login_azure_desktop(subdomain='www'):
-    if 'tenant' in session:    
+    if 'tenant' in session:
         company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
-        if company:
-            session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
-            print(session["flow"]["auth_uri"])
-            return redirect(session["flow"]["auth_uri"])
+    elif 'tenant' in request.args:
+        company = Company.query.filter_by(premium=True, tenant=request.args['tenant']).first()
+    if company:
+        session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
+        print(session["flow"]["auth_uri"])
+        return redirect(session["flow"]["auth_uri"])
     else:
         flash("Something went wrong with the authentication process", "danger")
     return redirect(url_for("main.index", subdomain=subdomain))
@@ -110,15 +112,17 @@ def login_azure_desktop(subdomain='www'):
 # TODO fix it
 @bp.route("/login_azure")
 def login_azure(subdomain='www'):
-    client_id = current_app.config['CLIENT_ID']
-    tenant_id = tenant_id=current_app.config['TENANT']
-    if 'tenant' in request.args:    
+    if 'tenant' in request.args or 'tenant' in session:    
         company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
         if company:
+            tenant_id = company.tenant
+            client_id = company.client_id
             scopes = company.scope.split(',')
             return render_template("auth/login_azure.html", title="Sign In", subdomain=subdomain, client_id=client_id, tenant_id=tenant_id, scopes=scopes, args=request.args.items())
         else:
             flash("Your company seems not to have a premium account to integrate with Teams", "warning")
+    else:
+        return redirect("errors.internal_error", subdomain=subdomain)
     return redirect(url_for("main.index", subdomain=subdomain))
     
 @bp.route('/signin-oidc')
