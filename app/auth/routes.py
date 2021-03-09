@@ -99,14 +99,20 @@ def login(subdomain='www'):
 def login_azure_desktop(subdomain='www'):
     if 'tenant' in session:
         company = Company.query.filter_by(premium=True, tenant=session['tenant']).first()
+        if company:
+            session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
+            print(session["flow"]["auth_uri"])
+            return redirect(session["flow"]["auth_uri"])
+        else:
+            flash("Something went wrong with the authentication process", "danger")
     elif 'tenant' in request.args:
         company = Company.query.filter_by(premium=True, tenant=request.args['tenant']).first()
-    if company:
-        session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
-        print(session["flow"]["auth_uri"])
-        return redirect(session["flow"]["auth_uri"])
-    else:
-        flash("Something went wrong with the authentication process", "danger")
+        if company:
+            session["flow"] = _build_auth_code_flow(company=company, subdomain=subdomain)
+            print(session["flow"]["auth_uri"])
+            return redirect(session["flow"]["auth_uri"])
+        else:
+            flash("Something went wrong with the authentication process", "danger")
     return redirect(url_for("main.index", subdomain=subdomain))
     
 # TODO fix it
