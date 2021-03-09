@@ -11,7 +11,7 @@
       let config = {
         clientId: "{{ client_id }}",
         //redirectUri: window.location.origin + "/auth/signin-oidc",
-        redirectUri: "http://localhost:5000/auth/signin-oidc",
+        redirectUri: window.location.origin + "/auth/signin-oidc",
         cacheLocation: "localStorage",
         endpoints: {
           "https://graph.microsoft.com": "https://graph.microsoft.com"
@@ -53,5 +53,6 @@
       return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
     };
   </script>
+  If this page is displayed in the browser, please click again in Teams on "Connect with your company credentials"
 </body>
 </html>
