@@ -23,7 +23,7 @@ class Config(object):
     USER_POSTS_PER_DAY = 20000000
     USER_COMMENTS_PER_DAY = 15
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
-    WTF_CSRF_ENABLED = os.environ.get("PRODUCTION")
+    WTF_CSRF_ENABLED = (os.environ.get("PRODUCTION") == 'True')
     SERVER_NAME = os.environ.get("SERVER_NAME")
     SESSION_COOKIE_SECURE = os.environ.get("PRODUCTION")
     REMEMBER_COOKIE_SECURE = os.environ.get("PRODUCTION")

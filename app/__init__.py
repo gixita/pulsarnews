@@ -33,7 +33,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
     app.config.update(SESSION_TYPE = 'filesystem')
     app.static_folder = 'static'
-
+    print('config ===> ', app.config['WTF_CSRF_ENABLED'])
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)
