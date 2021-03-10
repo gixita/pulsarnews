@@ -12,7 +12,7 @@ import logging
 from flaskext.markdown import Markdown
 from flask_mail import Mail
 
-is_subdomain_enable = True
+is_subdomain_enable = False
 
 db = SQLAlchemy(model_class=FlaskBaseModel)
 migrate = Migrate(compare_type=True)
