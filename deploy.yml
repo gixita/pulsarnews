@@ -20,10 +20,14 @@
       repo: 'https://github.com/{{ github_user }}/{{ app_name }}.git'
       dest: /home/{{ ansible_ssh_user }}/{{ app_name }}
       update: yes  # Does a git pull if the repo already exists
+  - name: Verify is environment file exist
+    stat: path=/home/{{ ansible_ssh_user }}/{{ app_name }}/.env
+    register: st
   - name: copy env file
     copy:
       src: .env
       dest: /home/{{ ansible_ssh_user }}/{{ app_name }}/.env
+    when: not st.stat.exists
   - name: install modules in a virtualenv
     pip:
       requirements: /home/{{ ansible_ssh_user }}/{{ app_name }}/requirements.txt
