@@ -25,10 +25,10 @@ class Config(object):
     LOG_TO_STDOUT = os.environ.get("LOG_TO_STDOUT")
     WTF_CSRF_ENABLED = (os.environ.get("PRODUCTION") == 'True')
     SERVER_NAME = os.environ.get("SERVER_NAME")
-    SESSION_COOKIE_SECURE = os.environ.get("PRODUCTION")
-    REMEMBER_COOKIE_SECURE = os.environ.get("PRODUCTION")
-    SESSION_COOKIE_HTTPONLY = os.environ.get("PRODUCTION")
-    REMEMBER_COOKIE_HTTPONLY = os.environ.get("PRODUCTION")
+    SESSION_COOKIE_SECURE = (os.environ.get("PRODUCTION") == 'True')
+    REMEMBER_COOKIE_SECURE = (os.environ.get("PRODUCTION") == 'True')
+    SESSION_COOKIE_HTTPONLY = (os.environ.get("PRODUCTION") == 'True')
+    REMEMBER_COOKIE_HTTPONLY = (os.environ.get("PRODUCTION") == 'True')
     
     #Azure auth
     SESSION_TYPE = "filesystem" 
