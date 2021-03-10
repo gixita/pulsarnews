@@ -1,0 +1,12 @@
+[webservers]
+# Add hosts here
+192.168.1.49
+
+
+[webservers:vars]
+# Local variables for Ansible playbooks
+ansible_ssh_user=kris
+ansible_ssh_pass=password
+ansible_sudo_pass=password
+github_user=gixita
+app_name=pulsarnews

@@ -1,0 +1,13 @@
+[Unit]
+Description=uWSGI instance to serve pulsarnews
+After=network.target
+
+[Service]
+User={{ ansible_ssh_user }}
+Group=www-data
+WorkingDirectory=/home/{{ ansible_ssh_user }}/{{ app_name }}
+Environment="PATH=/home/{{ ansible_ssh_user }}/{{ app_name }}/venv/bin"
+ExecStart=/home/{{ ansible_ssh_user }}/{{ app_name }}/venv/bin/uwsgi --ini pulsarnews.ini
+
+[Install]
+WantedBy=multi-user.target

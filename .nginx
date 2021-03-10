@@ -1,0 +1,9 @@
+server {
+    listen 80;
+    server_name pulsarnews-dev.io www.pulsarnews-dev.io;
+
+    location / {
+        include uwsgi_params;
+        uwsgi_pass unix:/home/{{ ansible_ssh_user }}/{{ app_name }}/{{ app_name }}.sock;
+    }
+}
