@@ -36,3 +36,4 @@ class Config(object):
     ENDPOINT = os.environ.get('ENDPOINT')
     SCOPE = [os.environ.get('SCOPE')]
     SESSION_TYPE = "filesystem" 
+    IS_SUBDOMAIN_ENABLE = (os.environ.get("IS_SUBDOMAIN_ENABLE") == 'True')

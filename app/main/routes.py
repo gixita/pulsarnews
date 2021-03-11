@@ -16,7 +16,7 @@ from flask_login import current_user, login_required
 from app import db
 from app.main.forms import CommentForm, EditProfileForm, PostForm, AddDomainForm
 from app.auth.forms import LoginEmailForm
-from app.models import Comment, Post, User, Vote, Comment_Vote, Domains, MailProviders
+from app.models import Comment, Post, User, Vote, Comment_Vote, Domains, MailProviders, Company
 from app.main import bp
 from app.main.invitation import send_invitation
 
@@ -103,9 +103,9 @@ def invitation_required(subdomain='www'):
 @login_required
 @company_required
 def user(subdomain='www'):
-    
+    company = Company.query.filter_by(id=current_user.company_id).first()
     return render_template(
-        "user.html", subdomain=subdomain, user=current_user, title=f"Profile: {current_user.username}"
+        "user.html", subdomain=subdomain, user=current_user, company=company, title=f"Profile: {current_user.username}"
     )
 
 @bp.route("/edit_profile", methods=["GET", "POST"])
@@ -159,6 +159,9 @@ def manage_domain(subdomain='www'):
         "manage_domain.html", subdomain=subdomain, title="Manage domain", domains=domains
     )
 
+#TODO Should think about if a user A is invited by a user B, if user A is not in the same company, should it work ?
+# Should user B only be able to invite user A if user A have an email in a domain approved in user B company ?
+# It makes no sense for user B to invite user A if they would not share the same link list !
 @bp.route("/invite_colleague", methods=["GET", "POST"])
 @login_required
 @company_required

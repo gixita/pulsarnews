@@ -8,28 +8,27 @@
     <div class="mx-md-5">
         <form action="" method="post" >
             {{ form.hidden_tag() }}
-            <p>
-                {{ form.title.label(class="form-label") }}<span class="text-danger">*</span><br>
-                {{ form.title(class="form-control form-control-lg", size=30, placeholder="Title of the article") }}<br>
+            {{ form.url(class="form-control", size=30, placeholder="URL") }}<br>
+            {% for error in form.url.errors %}
+            <span style="color: red;">[{{ error }}]</span>
+            {% endfor %}
+            <div class=" submit-post-frame">
+           
+                
+                {{ form.title(class="custom-form", size=30, placeholder="Title of the article") }}<br>
                 {% for error in form.title.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-            </p>
-            <p>
-                {{ form.url.label }}<span class="text-danger">*</span><br>
-                {{ form.url(class="form-control form-control-lg", size=30, placeholder="https://www.thewebsite.com/mynews") }}<br>
-                {% for error in form.url.errors %}
-                <span style="color: red;">[{{ error }}]</span>
-                {% endfor %}
-            </p>
-            <p>
-                {{ form.text.label }}<br>
-                {{ form.text(class="form-control form-control-lg", size=50, placeholder="Description and what's the impact for your company", rows=4) }}
-                <div id="textarea_feedback" class="d-flex flex-row mt-1 text-black-50 date-time"></div>
+           
+                {{ form.text(class="custom-form-textarea", size=50, placeholder="Description and what's the impact for your company", rows=4) }}
                 {% for error in form.text.errors %}
                 <span style="color: red;">[{{ error }}]</span>
                 {% endfor %}
-            </p>
+           
+        </div>
+                <div id="textarea_feedback" class="d-flex flex-row mt-1 text-black-50 date-time"></div>
+                
+            
             
             <button class="btn btn-primary btn-lg" type="submit">Submit</button>
         </form>
