@@ -12,7 +12,17 @@ import logging
 from flaskext.markdown import Markdown
 from flask_mail import Mail
 
-is_subdomain_enable = False
+class SubdomainConfig:
+    def __init__(self):
+        self.is_subdomain_enable = False
+    
+    def __str__(self):
+        return str(self.is_subdomain_enable)
+
+    def change(self, value):
+        self.is_subdomain_enable = value
+
+subdomain_config = SubdomainConfig()
 
 db = SQLAlchemy(model_class=FlaskBaseModel)
 migrate = Migrate(compare_type=True)
@@ -33,7 +43,7 @@ def create_app(config_class=Config):
     app.config.from_object(config_class)
     app.config.update(SESSION_TYPE = 'filesystem')
     app.static_folder = 'static'
-    print('config ===> ', app.config['WTF_CSRF_ENABLED'])
+    subdomain_config.change(app.config['IS_SUBDOMAIN_ENABLE'])
     db.init_app(app)
     migrate.init_app(app, db)
     login.init_app(app)

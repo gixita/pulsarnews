@@ -29,6 +29,7 @@ class Config(object):
     REMEMBER_COOKIE_SECURE = (os.environ.get("PRODUCTION") == 'True')
     SESSION_COOKIE_HTTPONLY = (os.environ.get("PRODUCTION") == 'True')
     REMEMBER_COOKIE_HTTPONLY = (os.environ.get("PRODUCTION") == 'True')
+    IS_SUBDOMAIN_ENABLE = (os.environ.get("IS_SUBDOMAIN_ENABLE") == 'True')
     
     #Azure auth
     SESSION_TYPE = "filesystem" 

@@ -5,7 +5,7 @@ import datetime
 from werkzeug.urls import url_parse
 import json
 
-from app import db, is_subdomain_enable
+from app import db, subdomain_config
 import uuid
 from app.auth import bp
 from app.auth.forms import (
@@ -208,7 +208,7 @@ def _build_msal_app(cache=None, company=None):
 def _build_auth_code_flow(company=None, subdomain='www'):
     scopes = company.scope.split(',')
     authority = company.authority+company.tenant
-    if is_subdomain_enable:
+    if subdomain_config.is_subdomain_enable:
         redirect_uri=url_for("auth.authorized", subdomain=subdomain, _external=True)
     else:
         redirect_uri=url_for("auth.authorized", _external=True)
